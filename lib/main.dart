@@ -17,6 +17,12 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginScreen(),
+      builder: (context, child) {
+        return ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 500),
+          child: child,
+        );
+      },
       getPages: AppPages.routes,
     );
   }

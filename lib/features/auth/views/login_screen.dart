@@ -1,11 +1,8 @@
-import 'package:admin/features/dashboard/views/sensor_caliberation_screen.dart';
 import 'package:admin/model/pond_model.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import '../../../routes/app_routes.dart';
 import '../../../shared/constant/font_helper.dart';
 import '../../../shared/constant/global_variables.dart';
 import '../../../shared/widgets/auth_base_view.dart';
@@ -37,94 +34,99 @@ class LoginScreen extends GetView<AuthController> {
           child: SizedBox(
             height: context.height,
             child: AuthBaseView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Column(
-                      children: [
-                        SizedBox(height: context.height * .15),
-                        SvgPicture.asset(
-                          "assets/images/logo.svg",
-                          color: greenColor,
-                          height: context.height * .16,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: context.height * .05),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Enter registered mobile number and password",
-                          style: GlobalFonts.ts16px700w(),
-                        ),
-                        const SizedBox(height: 20),
-                        MyTextField(
-                          controller: mobileController,
-                          hintText: "Mobile Number",
-                          textInputType: TextInputType.phone,
-                          maxLength: 10,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 500),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Column(
+                          children: [
+                            SizedBox(height: context.height * .15),
+                            SvgPicture.asset(
+                              "assets/images/logo.svg",
+                              color: greenColor,
+                              height: context.height * .16,
+                            ),
                           ],
-                          isValidate: false,
-                          onTap: () {
-                            // controller.ensureVisibleOnTextArea(
-                            //     textfieldKey: controller.scrollKey);
-                          },
                         ),
-                        MyTextField(
-                          controller: passwordController,
-                          hintText: "Password",
-                          isValidate: true,
-                          validator: (val) {
-                            RegExp re = RegExp(r'^[0-9]{10}$');
+                      ),
+                      SizedBox(height: context.height * .05),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Enter registered mobile number and password",
+                              style: GlobalFonts.ts16px700w(),
+                            ),
+                            const SizedBox(height: 20),
+                            MyTextField(
+                              controller: mobileController,
+                              hintText: "Mobile Number",
+                              textInputType: TextInputType.phone,
+                              maxLength: 10,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              isValidate: false,
+                              onTap: () {
+                                // controller.ensureVisibleOnTextArea(
+                                //     textfieldKey: controller.scrollKey);
+                              },
+                            ),
+                            MyTextField(
+                              controller: passwordController,
+                              hintText: "Password",
+                              isValidate: true,
+                              validator: (val) {
+                                RegExp re = RegExp(r'^[0-9]{10}$');
 
-                            RegExp regex = RegExp(
-                                r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-                            if (val.isEmpty &&
-                                mobileController.text.isNotEmpty) {
-                              return "Mobile and Password is required";
-                            } else if (!re.hasMatch(mobileController.text) &&
-                                !regex.hasMatch(val)) {
-                              return "Enter a valid mobile number and password";
-                            } else if (!regex.hasMatch(val)) {
-                              return "Enter a valid password";
-                            }
-                            return "";
-                          },
-                          isPass: true,
-                          onTap: () {},
+                                RegExp regex = RegExp(
+                                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                                if (val.isEmpty &&
+                                    mobileController.text.isNotEmpty) {
+                                  return "Mobile and Password is required";
+                                } else if (!re
+                                        .hasMatch(mobileController.text) &&
+                                    !regex.hasMatch(val)) {
+                                  return "Enter a valid mobile number and password";
+                                } else if (!regex.hasMatch(val)) {
+                                  return "Enter a valid password";
+                                }
+                                return "";
+                              },
+                              isPass: true,
+                              onTap: () {},
+                            ),
+                            SizedBox(height: context.height * .01),
+                            MyButton(
+                              text: "Login",
+                              height: 56,
+                              textStyle:
+                                  GlobalFonts.ts20px500w(color: Colors.white),
+                              onPressed: () async {
+                                await controller.login(
+                                    mobile: mobileController.text,
+                                    password: passwordController.text);
+                              },
+                            ),
+                            SizedBox(height: context.height * .02),
+                          ],
                         ),
-                        SizedBox(height: context.height * .01),
-                        MyButton(
-                          text: "Login",
-                          height: 56,
-                          textStyle:
-                              GlobalFonts.ts20px500w(color: Colors.white),
-                          onPressed: () async {
-                            await controller.login(
-                                mobile: mobileController.text,
-                                password: passwordController.text);
-                        
-                          },
-                        ),
-                        SizedBox(height: context.height * .02),
-                      ],
-                    ),
+                      ),
+                      const Spacer(),
+                      const BottomTnC(),
+                      SizedBox(
+                        key: scrollKey,
+                        height: context.height * .02,
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  const BottomTnC(),
-                  SizedBox(
-                    key: scrollKey,
-                    height: context.height * .02,
-                  ),
-                ],
+                ),
               ),
             ),
           ),

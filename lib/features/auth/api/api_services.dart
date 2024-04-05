@@ -2,7 +2,7 @@ import '../../../core/model/response_model.dart';
 import '../../../core/network/base_api_service.dart';
 
 class AuthEndpoint {
-  static const login = '/auth/login';
+  static const login = '/admin/login';
 }
 
 class AuthService extends BaseApiService {

@@ -1,3 +1,4 @@
+import 'package:admin/core/model/response_model.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/local_data_helper.dart';
@@ -12,8 +13,8 @@ class SensorService extends BaseApiService {
   Future<List<CalibrationValues>> fetchCalibrationValues(String pondId) async {
     String token = await LocalDataHelper.getUserToken();
     final response = await get(
-      "https://api-dev.aquagenixpro.com/sensorCalibration/currentCalibrationValues",
-      data: {"pondId": int.parse(pondId)},
+      "https://api-dev.aquagenixpro.com/admin/calibration?pondId=$pondId",
+      // data: {"pondId": int.parse(pondId)},
       options: Options(
         headers: {"authorization": token},
       ),
@@ -32,11 +33,11 @@ class SensorService extends BaseApiService {
     return calibrationValues;
   }
 
-  Future<String> updateSensorCaliberation(
+  Future<ResponseModel> updateSensorCaliberation(
       String id, String sensorRecordedValue, String? subSensorItemValue) async {
     String token = await LocalDataHelper.getUserToken();
-    final response = await put(
-      "https://api-dev.aquagenixpro.com/sensorCalibration/$id",
+    final res = await put(
+      "https://api-dev.aquagenixpro.com/admin/calibration/$id",
       data: {
         "sensorRecordedValue": sensorRecordedValue,
         "subSensorItemValue": subSensorItemValue
@@ -46,6 +47,6 @@ class SensorService extends BaseApiService {
       ),
     );
 
-    return response.data["message"];
+    return ResponseModel.empty().fromJson(res.data);
   }
 }

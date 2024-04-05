@@ -28,37 +28,45 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 20,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: 300,
           ),
-          Expanded(
-            child: GridView(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1,
-                crossAxisSpacing: Get.width * 0.04,
-                mainAxisSpacing: Get.width * 0.02,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 20,
               ),
-              children: [
-                DashboardItem(
-                  ontab: () async {
-                    Get.dialog(const SenserCaliberationDialoge());
-                  },
-                  title: 'Sensor Caliberation',
-                  icon: SvgPicture.asset(
-                    "assets/images/farms.svg",
-                    color: greenColor,
-                    height: context.height * .1,
+              Expanded(
+                child: GridView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(10),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: Get.width * 0.01,
+                    mainAxisSpacing: Get.width * 0.01,
                   ),
-                )
-              ],
-            ),
+                  children: [
+                    DashboardItem(
+                      ontab: () async {
+                        Get.dialog(const SenserCaliberationDialoge());
+                      },
+                      title: 'Sensor Caliberation',
+                      icon: SvgPicture.asset(
+                        "assets/images/logo.svg",
+                        color: greenColor,
+                        height: context.height * .1,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -136,41 +144,45 @@ class _SenserCaliberationDialogeState extends State<SenserCaliberationDialoge> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // height: 350,
+      width: 400,
       child: Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(16.0),
-            children: [
-              MyTextField(
-                controller: deviceID,
-                hintText: "",
-                textStyle: GlobalFonts.ts20px500w(),
-                labelText: "Device ID",
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 300),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                MyTextField(
+                  controller: deviceID,
+                  hintText: "PondId",
+                  textStyle: GlobalFonts.ts20px500w(),
+                  labelText: "Pond ID",
 
-                onChanged: (newValue) {
-                  deviceID.text = newValue;
-                },
-                //isReadOny: true,
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Center(
-                child: MyButton(
-                    height: 50,
-                    textColor: Colors.white,
-                    width: context.width * 0.5,
-                    color: greenColor,
-                    text: 'SUBMIT',
-                    onPressed: () async {
-                      Get.toNamed(AppRoutes.sensorCaliberation,
-                          parameters: {"pondId": deviceID.text});
-                    }),
-              ),
-            ],
+                  onChanged: (newValue) {
+                    deviceID.text = newValue;
+                  },
+                  //isReadOny: true,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Center(
+                  child: MyButton(
+                      height: 50,
+                      textColor: Colors.white,
+                      width: context.width * 0.5,
+                      color: greenColor,
+                      text: 'SUBMIT',
+                      onPressed: () async {
+                        Get.back();
+                        Get.toNamed(AppRoutes.sensorCaliberation,
+                            parameters: {"pondId": deviceID.text});
+                      }),
+                ),
+              ],
+            ),
           ),
         ),
       ),
