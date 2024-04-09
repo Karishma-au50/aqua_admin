@@ -2,11 +2,11 @@ import 'package:admin/features/dashboard/controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../model/calibration_values.dart';
-import '../../../shared/constant/font_helper.dart';
-import '../../../shared/constant/global_variables.dart';
-import '../../../shared/widgets/buttons/my_button.dart';
-import '../../../shared/widgets/inputs/my_text_field.dart';
+import '../../../../model/calibration_values.dart';
+import '../../../../shared/constant/font_helper.dart';
+import '../../../../shared/constant/global_variables.dart';
+import '../../../../shared/widgets/buttons/my_button.dart';
+import '../../../../shared/widgets/inputs/my_text_field.dart';
 
 class SensorCalibration extends StatefulWidget {
   const SensorCalibration({
@@ -147,9 +147,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts14px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-                      onChanged: (newValue) {
-                        doMvInAirController.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   doMvInAirController.text = newValue;
+                      // },
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -178,7 +178,11 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                         ],
                         onPressed: () async {
                           var id = calibrationValues.isNotEmpty
-                              ? calibrationValues.first.id
+                              ? calibrationValues
+                                  .firstWhereOrNull((element) =>
+                                      element.sensorType == 'DO' &&
+                                      element.subSensorItem == 'mvInAir')
+                                  ?.id
                               : null;
 
                           await controller.updateSensorCaliberation(
@@ -203,9 +207,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-                      onChanged: (newValue) {
-                        phBuffer4Controller.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   phBuffer4Controller.text = newValue;
+                      // },
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -234,7 +238,11 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'PH' &&
+                                    element.subSensorItem == 'buffer4')
+                                ?.id
                             : null;
 
                         await controller.updateSensorCaliberation(
@@ -255,9 +263,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-                      onChanged: (newValue) {
-                        phBuffer7Controller.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   phBuffer7Controller.text = newValue;
+                      // },
                       //isReadOny: true,
                     ),
                   ),
@@ -287,7 +295,11 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'PH' &&
+                                    element.subSensorItem == 'buffer7')
+                                ?.id
                             : null;
 
                         await controller.updateSensorCaliberation(
@@ -308,9 +320,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-                      onChanged: (newValue) {
-                        phBuffer9Controller.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   phBuffer9Controller.text = newValue;
+                      // },
                       //isReadOny: true,
                     ),
                   ),
@@ -340,7 +352,11 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'PH' &&
+                                    element.subSensorItem == 'buffer9')
+                                ?.id
                             : null;
 
                         await controller.updateSensorCaliberation(
@@ -384,9 +400,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-                      onChanged: (newValue) {
-                        lowNH4Controller.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   lowNH4Controller.text = newValue;
+                      // },
                       //isReadOny: true,
                     ),
                   ),
@@ -416,16 +432,15 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
-                            : null;
-                        var subSensorItemValue = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.subSensorItemValue
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'NH4' &&
+                                    element.subSensorItem == 'mgPerLow')
+                                ?.id
                             : null;
 
-                        await controller.updateSensorCaliberation(
-                            id.toString(),
-                            lowNH4Controller.text,
-                            subSensorItemValue.toString());
+                        await controller.updateSensorCaliberation(id.toString(),
+                            lowNH4Controller.text, nh4LowSensorController.text);
                       },
                     ),
                   ),
@@ -454,9 +469,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-                      onChanged: (newValue) {
-                        highNH4Controller.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   highNH4Controller.text = newValue;
+                      // },
                       //isReadOny: true,
                     ),
                   ),
@@ -486,16 +501,17 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
-                            : null;
-                        var subSensorItemValue = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.subSensorItemValue
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'NH4' &&
+                                    element.subSensorItem == 'mgPerHigh')
+                                ?.id
                             : null;
 
                         await controller.updateSensorCaliberation(
                             id.toString(),
                             highNH4Controller.text,
-                            subSensorItemValue.toString());
+                            nh4HighSensorController.text);
                       },
                     ),
                   ),
@@ -534,9 +550,9 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       hintText: "Low",
-                      onChanged: (newValue) {
-                        lowNo3Controller.text = newValue;
-                      },
+                      // onChanged: (newValue) {
+                      //   lowNo3Controller.text = newValue;
+                      // },
                       //isReadOny: true,
                     ),
                   ),
@@ -566,15 +582,14 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'NO3' &&
+                                    element.subSensorItem == 'mgPerLow')
+                                ?.id
                             : null;
-                        var subSensorItemValue = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.subSensorItemValue
-                            : null;
-                        await controller.updateSensorCaliberation(
-                            id.toString(),
-                            lowNo3Controller.text,
-                            subSensorItemValue.toString());
+                        await controller.updateSensorCaliberation(id.toString(),
+                            lowNo3Controller.text, no3LowSensorController.text);
                       },
                     ),
                   ),
@@ -603,11 +618,6 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
                       isValidate: false,
-
-                      onChanged: (newValue) {
-                        highN03Controller.text = newValue;
-                      },
-                      //isReadOny: true,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -636,16 +646,17 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                         ],
                         onPressed: () async {
                           var id = calibrationValues.isNotEmpty
-                              ? calibrationValues.first.id
-                              : null;
-                          var subSensorItemValue = calibrationValues.isNotEmpty
-                              ? calibrationValues.first.subSensorItemValue
+                              ? calibrationValues
+                                  .firstWhereOrNull((element) =>
+                                      element.sensorType == 'NO3' &&
+                                      element.subSensorItem == 'mgPerHigh')
+                                  ?.id
                               : null;
 
                           await controller.updateSensorCaliberation(
                               id.toString(),
                               highN03Controller.text,
-                              subSensorItemValue.toString());
+                              no3HighSensorController.text);
                         }),
                   ),
                 ],
@@ -677,11 +688,6 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       hintText: "Standard",
                       labelStyle: GlobalFonts.ts12px700w,
                       textStyle: GlobalFonts.ts20px500w(),
-
-                      onChanged: (newValue) {
-                        ecController.text = newValue;
-                      },
-                      //isReadOny: true,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -710,16 +716,15 @@ class _SensorCalibrationState extends State<SensorCalibration> {
                       ],
                       onPressed: () async {
                         var id = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.id
-                            : null;
-                        var subSensorItemValue = calibrationValues.isNotEmpty
-                            ? calibrationValues.first.subSensorItemValue
+                            ? calibrationValues
+                                .firstWhereOrNull((element) =>
+                                    element.sensorType == 'EC' &&
+                                    element.subSensorItem == 'muPerCM')
+                                ?.id
                             : null;
 
                         await controller.updateSensorCaliberation(
-                            id.toString(),
-                            ecController.toString(),
-                            subSensorItemValue.toString());
+                            id!, ecController.text, ecSensorController.text);
                       },
                     ),
                   ),

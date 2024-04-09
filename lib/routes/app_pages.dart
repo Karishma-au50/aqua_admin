@@ -1,5 +1,5 @@
 import 'package:admin/features/dashboard/views/dashboardScreen/dashboard_screen.dart';
-import 'package:admin/features/dashboard/views/sensor_caliberation_screen.dart';
+import 'package:admin/features/dashboard/views/sensorCaliberation/sensor_caliberation_screen.dart';
 import 'package:get/get.dart';
 
 import '../features/auth/binding/auth_binding.dart';

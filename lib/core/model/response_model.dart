@@ -2,17 +2,17 @@ import 'base_model.dart';
 
 class ResponseModel<T> {
   final String? message;
-  final bool? error;
+  final bool error;
   final T? result;
 
-  ResponseModel({this.message, this.error, this.result});
+  ResponseModel({this.message = "", this.error = false, this.result});
 
   ResponseModel.error({this.message, this.result}) : error = false;
 
   // default constructor
   ResponseModel.empty()
-      : message = null,
-        error = null,
+      : message = "Something went wrong",
+        error = true,
         result = null;
 
   Map<String, dynamic> toJson() {

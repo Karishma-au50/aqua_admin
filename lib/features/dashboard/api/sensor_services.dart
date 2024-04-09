@@ -14,7 +14,6 @@ class SensorService extends BaseApiService {
     String token = await LocalDataHelper.getUserToken();
     final response = await get(
       "https://api-dev.aquagenixpro.com/admin/calibration?pondId=$pondId",
-      // data: {"pondId": int.parse(pondId)},
       options: Options(
         headers: {"authorization": token},
       ),
@@ -42,6 +41,21 @@ class SensorService extends BaseApiService {
         "sensorRecordedValue": sensorRecordedValue,
         "subSensorItemValue": subSensorItemValue
       },
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    return ResponseModel.empty().fromJson(res.data);
+  }
+
+  // clean inventory
+  Future<ResponseModel> cleanInventory(
+    String id,
+  ) async {
+    String token = await LocalDataHelper.getUserToken();
+    final res = await delete(
+      "https://api-dev.aquagenixpro.com/admin/inventory/?deviceId=$id",
       options: Options(
         headers: {"authorization": token},
       ),

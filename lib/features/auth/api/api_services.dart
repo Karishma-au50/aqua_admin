@@ -7,12 +7,10 @@ class AuthEndpoint {
 
 class AuthService extends BaseApiService {
   Future<ResponseModel> login(String mobile, String password) async {
-    final res = await post(
-        "https://api-dev.aquagenixpro.com${AuthEndpoint.login}",
-        data: {
-          "mobile": int.parse(mobile),
-          "password": password,
-        });
+    final res = await post(AuthEndpoint.login, data: {
+      "mobile": int.parse(mobile),
+      "password": password,
+    });
     return ResponseModel<String>.empty().fromJson(res.data);
   }
 }

@@ -1,3 +1,3 @@
 class AppConstants {
-  static const String baseUrl = 'http://api.litchies.com:5000';
+  static const String baseUrl = 'https://api-dev.aquagenixpro.com';
 }

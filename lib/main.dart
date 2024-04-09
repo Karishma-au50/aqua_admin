@@ -1,4 +1,5 @@
 import 'package:admin/features/auth/views/login_screen.dart';
+import 'package:admin/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,13 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-      builder: (context, child) {
-        return ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 500),
-          child: child,
-        );
-      },
+      // home: LoginScreen(),
+      initialRoute: AppRoutes.login,
       getPages: AppPages.routes,
     );
   }

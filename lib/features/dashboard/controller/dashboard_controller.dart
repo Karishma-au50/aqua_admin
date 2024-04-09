@@ -16,7 +16,21 @@ class SensorController extends GetxController {
     try {
       final res = await _api.updateSensorCaliberation(
           id, sensorRecordedValue, subSensorItemValue);
-      if (!res.error!) {
+      if (!res.error) {
+        MyToasts.toastSuccess(res.message ?? "Success");
+      } else {
+        MyToasts.toastError(res.message ?? "Error");
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+    }
+  }
+
+  // delete device id
+  Future<void> cleanInventory(String id) async {
+    try {
+      final res = await _api.cleanInventory(id);
+      if (!res.error) {
         MyToasts.toastSuccess(res.message ?? "Success");
       } else {
         MyToasts.toastError(res.message ?? "Error");

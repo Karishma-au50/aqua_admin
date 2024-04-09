@@ -11,18 +11,34 @@ import '../../../shared/widgets/buttons/my_button.dart';
 import '../../../shared/widgets/inputs/my_text_field.dart';
 import '../controller/auth_controller.dart';
 
-class LoginScreen extends GetView<AuthController> {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   PondModel? pond;
 
   final formKey = GlobalKey<FormState>();
-  final AuthController controller = Get.put(AuthController());
+
+  final AuthController controller = Get.isRegistered<AuthController>()
+      ? Get.find()
+      : Get.put(AuthController());
+
   TextEditingController mobileController = TextEditingController();
+
   TextEditingController passwordController = TextEditingController();
+
   RxBool isRememberMe = false.obs;
+
   final scrollKey = GlobalKey();
+
   RxBool isPC = false.obs;
+
   RxBool isTC = false.obs;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
