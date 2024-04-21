@@ -8,7 +8,7 @@ class AuthEndpoint {
 class AuthService extends BaseApiService {
   Future<ResponseModel> login(String mobile, String password) async {
     final res = await post(AuthEndpoint.login, data: {
-      "mobile": int.parse(mobile),
+      "mobile": mobile,
       "password": password,
     });
     return ResponseModel<String>.empty().fromJson(res.data);

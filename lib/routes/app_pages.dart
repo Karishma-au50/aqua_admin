@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../features/auth/binding/auth_binding.dart';
 import '../features/auth/views/login_screen.dart';
+import '../features/dashboard/views/liveData/live_data.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -21,6 +22,11 @@ class AppPages {
     GetPage(
       name: AppRoutes.dashboard,
       page: () => const DashBoardScreen(),
+      binding: AuthBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.conclusiveOrRawLiveData,
+      page: () => const ConclusiveOrRawLiveDataScreen(),
       binding: AuthBinding(),
     ),
   ];

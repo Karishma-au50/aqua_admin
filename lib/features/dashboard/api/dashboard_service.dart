@@ -1,4 +1,5 @@
 import 'package:admin/core/model/response_model.dart';
+import 'package:admin/model/conclusive_Raw_data_model.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/local_data_helper.dart';
@@ -62,5 +63,28 @@ class SensorService extends BaseApiService {
     );
 
     return ResponseModel.empty().fromJson(res.data);
+  }
+  // get live data
+
+  Future<ResponseModel> conclusiveOrRawLiveData(String typeId, String dlNo,
+      String networkNo, String collectionType, String count) async {
+    String token = await LocalDataHelper.getUserToken();
+
+    var res = await get(
+      "https://api-dev.aquagenixpro.com/admin/getLiveData?typeId=$typeId&dlno=$dlNo&networkNo=$networkNo&collectionType=$collectionType&count=$count",
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<List<ConclusiveOrRawDataModel>>(
+      message: res.data["message"],
+      error: res.data["error"],
+      result: res.data["result"]
+          .map<ConclusiveOrRawDataModel>(
+              (e) => ConclusiveOrRawDataModel.fromMap(e))
+          .toList(),
+    );
+    return resModel;
   }
 }

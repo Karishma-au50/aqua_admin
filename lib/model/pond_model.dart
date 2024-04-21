@@ -4,7 +4,6 @@ import 'package:admin/shared/utils/extensions.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
-import '../core/model/base_model.dart';
 
 class PondModel {
   final String? id;
@@ -119,7 +118,6 @@ class PondModel {
             : 0);
   }
 
-  @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
       'id': id,
@@ -243,6 +241,7 @@ class PondModel {
       createdOn: createdOn ?? this.createdOn,
     );
   }
+
 }
 
 class DerivedValues {

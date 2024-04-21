@@ -6,7 +6,7 @@ const Color greenColor = Color.fromRGBO(22, 99, 81, 1);
 const Color blackColor = Color(0xFF0E0F0C);
 
 const String apiHost = "https://api-main.aquagenixpro.com/";
-// const String apiHost = "https://api-dev.aquagenixpro.com/";
+// const String apiHost = "https://api-main.aquagenixpro.com/";
 // String apiHost =
 //     GetPlatform.isAndroid ? "http://10.0.2.2:3001" : "http://localhost:3001";
 

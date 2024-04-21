@@ -3,7 +3,7 @@ abstract class BaseConfig {
 }
 
 class Base extends BaseConfig {
-  String apiHost = "https://api-dev.aquagenixpro.com/";
+  String apiHost = "https://api-main.aquagenixpro.com/";
   @override
   String get baseUrl => "$apiHost/";
 }
