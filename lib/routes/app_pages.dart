@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import '../features/auth/binding/auth_binding.dart';
 import '../features/auth/views/login_screen.dart';
-import '../features/dashboard/views/liveData/live_data.dart';
+import '../features/dashboard/views/liveData/conclusive_raw_live_data_screen.dart';
 import 'app_routes.dart';
 
 class AppPages {
