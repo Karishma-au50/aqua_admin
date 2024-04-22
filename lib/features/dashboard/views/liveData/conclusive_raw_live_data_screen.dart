@@ -1,4 +1,5 @@
 import 'package:admin/model/conclusive_Raw_data_model.dart';
+import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -30,14 +31,6 @@ class _ConclusiveOrRawLiveDataScreenState
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
-    // controller
-    //     .conclusiveOrRawLiveData(typeIdController.text, dlNoController.text,
-    //         networkNoController.text, typeValue, countValue)
-    //     .then((value) {
-    //   if (value != null) {
-    //     conclusiveOrRawData.addAll(value);
-    //   }
-    // });
     super.initState();
   }
 
@@ -50,38 +43,59 @@ class _ConclusiveOrRawLiveDataScreenState
           const SizedBox(
             height: 40,
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: MyTextField(
-                  controller: typeIdController,
-                  hintText: "Type ID",
-                  textStyle: GlobalFonts.ts20px500w(),
-                  labelText: "TypeID",
-                  isValidate: true,
+          Form(
+            key: _formKey,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: MyTextField(
+                    controller: typeIdController,
+                    hintText: "Type ID",
+                    textStyle: GlobalFonts.ts20px500w(),
+                    labelText: "TypeID",
+                    isValidate: true,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "required";
+                      }
+                      return "";
+                    },
+                  ),
                 ),
-              ),
-              Expanded(
-                child: MyTextField(
-                  controller: dlNoController,
-                  hintText: "dlno",
-                  textStyle: GlobalFonts.ts20px500w(),
-                  labelText: "dlno",
-                  isValidate: true,
+                Expanded(
+                  child: MyTextField(
+                    controller: dlNoController,
+                    hintText: "dlno",
+                    textStyle: GlobalFonts.ts20px500w(),
+                    labelText: "dlno",
+                    isValidate: true,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "required";
+                      }
+                      return "";
+                    },
+                  ),
                 ),
-              ),
-              Expanded(
-                child: MyTextField(
-                  controller: networkNoController,
-                  hintText: "Network No",
-                  textStyle: GlobalFonts.ts20px500w(),
-                  labelText: "Network Number",
-                  isValidate: true,
+                Expanded(
+                  child: MyTextField(
+                    controller: networkNoController,
+                    hintText: "Network No",
+                    textStyle: GlobalFonts.ts20px500w(),
+                    labelText: "Network Number",
+                    isValidate: true,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "required";
+                      }
+                      return "";
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(
             height: 10,
@@ -134,23 +148,27 @@ class _ConclusiveOrRawLiveDataScreenState
                     text: "Submit",
                     height: 47,
                     onPressed: () async {
-                      try {
-                        final finalCollectionType =
-                            typeValue == 'ConclusiveData' ? 1 : 2;
-                        controller
-                            .conclusiveOrRawLiveData(
-                          typeIdController.text,
-                          dlNoController.text,
-                          networkNoController.text,
-                          finalCollectionType.toString(),
-                          countValue,
-                        )
-                            .then((value) {
-                          if (value != null) {
-                            conclusiveOrRawData(value);
-                          }
-                        });
-                      } catch (e) {}
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          final finalCollectionType =
+                              typeValue == 'ConclusiveData' ? 1 : 2;
+                          controller
+                              .conclusiveOrRawLiveData(
+                            typeIdController.text,
+                            dlNoController.text,
+                            networkNoController.text,
+                            finalCollectionType.toString(),
+                            countValue,
+                          )
+                              .then((value) {
+                            if (value != null) {
+                              conclusiveOrRawData(value);
+                            }
+                          });
+                        } catch (e) {
+                          MyToasts.toastError("Not Able To Fetch The Data");
+                        }
+                      }
                     },
                   ),
                 )
