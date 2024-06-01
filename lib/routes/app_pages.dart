@@ -1,3 +1,4 @@
+import 'package:admin/features/dashboard/views/WaterQualityGraph/water_quality_graph.dart';
 import 'package:admin/features/dashboard/views/dashboardScreen/dashboard_screen.dart';
 import 'package:admin/features/dashboard/views/sensorCaliberation/sensor_caliberation_screen.dart';
 import 'package:get/get.dart';
@@ -27,6 +28,11 @@ class AppPages {
     GetPage(
       name: AppRoutes.conclusiveOrRawLiveData,
       page: () => const ConclusiveOrRawLiveDataScreen(),
+      binding: AuthBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.waterQualityGraph,
+      page: () => const WaterQualityGraph(),
       binding: AuthBinding(),
     ),
   ];

@@ -29,7 +29,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
-          constraints:const BoxConstraints(
+          constraints: const BoxConstraints(
             maxWidth: 300,
           ),
           child: Column(
@@ -73,6 +73,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         Get.toNamed(AppRoutes.conclusiveOrRawLiveData);
                       },
                       title: 'Live Data',
+                    ),
+                    DashboardItem(
+                      ontab: () async {
+                        Get.toNamed(AppRoutes.waterQualityGraph);
+                      },
+                      title: 'Water Quality Graph',
                     )
                   ],
                 ),
@@ -219,12 +225,14 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
   TextEditingController deviceID = TextEditingController();
   final SensorController controller = Get.put(SensorController());
   @override
+  // PM230600003
+  // 5
   Widget build(BuildContext context) {
     return SizedBox(
       width: 400,
       child: Dialog(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 300),
+          constraints: const BoxConstraints(maxWidth: 300),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView(
@@ -252,6 +260,7 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
                         await controller.cleanInventory(deviceID.text);
                       }),
                 ),
+                //
               ],
             ),
           ),
