@@ -7,6 +7,8 @@ import '../exceptions/custom_exceptions.dart';
 abstract class BaseApiService {
   static final _options = BaseOptions(
     baseUrl: AppConstants.baseUrl,
+    // connectTimeout: AppUrl.connectionTimeout,
+    // receiveTimeout: AppUrl.receiveTimeout,
     contentType: "application/json",
     responseType: ResponseType.json,
   );
@@ -18,7 +20,7 @@ abstract class BaseApiService {
   Future<Response> get(
     String url, {
     Map<String, dynamic>? queryParameters,
-    Object? data,
+     Object? data,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
@@ -27,7 +29,7 @@ abstract class BaseApiService {
         .get(
           url,
           queryParameters: queryParameters,
-          data: data,
+          data:data,
           options: options,
           cancelToken: cancelToken,
           onReceiveProgress: onReceiveProgress,

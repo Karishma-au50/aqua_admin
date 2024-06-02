@@ -14,7 +14,7 @@ class SensorService extends BaseApiService {
   Future<List<CalibrationValues>> fetchCalibrationValues(String pondId) async {
     String token = await LocalDataHelper.getUserToken();
     final response = await get(
-      "/admin/calibration?pondId=$pondId",
+      "https://api-dev.aquagenixpro.com/admin/calibration?pondId=$pondId",
       options: Options(
         headers: {"authorization": token},
       ),
@@ -37,7 +37,7 @@ class SensorService extends BaseApiService {
       String id, String sensorRecordedValue, String? subSensorItemValue) async {
     String token = await LocalDataHelper.getUserToken();
     final res = await put(
-      "/admin/calibration/$id",
+      "https://api-dev.aquagenixpro.com/admin/calibration/$id",
       data: {
         "sensorRecordedValue": sensorRecordedValue,
         "subSensorItemValue": subSensorItemValue
@@ -56,7 +56,7 @@ class SensorService extends BaseApiService {
   ) async {
     String token = await LocalDataHelper.getUserToken();
     final res = await delete(
-      "/admin/inventory/?deviceId=$id",
+      "https://api-dev.aquagenixpro.com/admin/inventory/?deviceId=$id",
       options: Options(
         headers: {"authorization": token},
       ),
@@ -71,7 +71,7 @@ class SensorService extends BaseApiService {
     String token = await LocalDataHelper.getUserToken();
 
     var res = await get(
-      "/admin/getLiveData?typeId=$typeId&dlno=$dlNo&networkNo=$networkNo&collectionType=$collectionType&count=$count",
+      "https://api-dev.aquagenixpro.com/admin/getLiveData?typeId=$typeId&dlno=$dlNo&networkNo=$networkNo&collectionType=$collectionType&count=$count",
       options: Options(
         headers: {"authorization": token},
       ),
