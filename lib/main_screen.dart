@@ -27,6 +27,12 @@ class _MainScreenState extends State<MainScreen> {
       title: const Text('Home'),
       body: const SizedBox.shrink(),
     ),
+    PaneItem(
+      key: const ValueKey('/waterQuality'),
+      icon: const Icon(FluentIcons.graph_symbol),
+      title: const Text('Graph'),
+      body: const SizedBox.shrink(),
+    ),
   ].map<NavigationPaneItem>((e) {
     PaneItem buildPaneItem(PaneItem item) {
       return PaneItem(

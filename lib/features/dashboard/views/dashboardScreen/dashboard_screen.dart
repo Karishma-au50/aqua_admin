@@ -22,13 +22,13 @@ class DashBoardScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 20,
-            ),
-            SvgPicture.asset(
-              "assets/images/logo.svg",
-              height: 80,
-            ),
+            // const SizedBox(
+            //   height: 20,
+            // ),
+            // SvgPicture.asset(
+            //   "assets/images/logo.svg",
+            //   height: 80,
+            // ),
             const SizedBox(
               height: 20,
             ),
@@ -65,7 +65,13 @@ class DashBoardScreen extends StatelessWidget {
                       NavHelper.pushToNamed(AppRoutes.conclusiveOrRawLiveData);
                     },
                     title: 'Live Data',
-                  )
+                  ),
+                  // DashboardItem(
+                  //   ontab: () async {
+                  //     NavHelper.pushToNamed(AppRoutes.waterQuality);
+                  //   },
+                  //   title: 'Graph Details',
+                  // )
                 ],
               ),
             ),

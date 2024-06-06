@@ -1,0 +1,32 @@
+import 'package:admin/features/dashboard/views/WaterQualityGraph/line_chart.dart';
+import 'package:admin/features/dashboard/views/WaterQualityGraph/value_parameter.dart';
+import 'package:admin/shared/widgets/buttons/my_button.dart';
+import 'package:flutter/material.dart';
+
+class WaterQualityScreen extends StatefulWidget {
+  const WaterQualityScreen({super.key});
+
+  @override
+  State<WaterQualityScreen> createState() => _WaterQualityScreenState();
+}
+
+class _WaterQualityScreenState extends State<WaterQualityScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            LineChart(),
+            SizedBox(
+              height: 20,
+            ),
+            ValueParameter(),
+            // MyButton(
+            //     width: 150, text: "Add Parameters", onPressed: () async {}),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         final appTheme = context.watch<AppTheme>();
         return fluent.FluentApp.router(
-          title: "ERP",
+          title: "ADMIN",
           themeMode: appTheme.mode,
           debugShowCheckedModeBanner: false,
           color: appTheme.color,
