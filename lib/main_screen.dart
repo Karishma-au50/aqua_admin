@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../routes/app_pages.dart';
 import '../../routes/app_routes.dart';
 import '../../theme.dart';
+import 'core/local_data_helper.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen(
@@ -33,6 +34,15 @@ class _MainScreenState extends State<MainScreen> {
       title: const Text('Graph'),
       body: const SizedBox.shrink(),
     ),
+    PaneItem(
+        key: const ValueKey('/logout'),
+        icon: const Icon(FluentIcons.sign_out),
+        title: const Text('Logout'),
+        body: const SizedBox.shrink(),
+        onTap: () {
+          LocalDataHelper.logout();
+          context.go(AppRoutes.login);
+        }),
   ].map<NavigationPaneItem>((e) {
     PaneItem buildPaneItem(PaneItem item) {
       return PaneItem(
@@ -189,35 +199,60 @@ class _MainScreenState extends State<MainScreen> {
         selected: _calculateSelectedIndex(context),
         header: SizedBox(
           height: kOneLineTileHeight,
-          child: ShaderMask(
-            shaderCallback: (rect) {
-              final color = appTheme.color.defaultBrushFor(
-                theme.brightness,
-              );
-              return LinearGradient(
-                colors: [
-                  color,
-                  color,
-                ],
-              ).createShader(rect);
-            },
-            child: const FlutterLogo(
-              style: FlutterLogoStyle.horizontal,
-              size: 80.0,
-              textColor: Colors.white,
-              duration: Duration.zero,
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Align(
+                  // alignment: AlignmentDirectional.centerStart,
+                  child: SvgPicture.asset(
+                    "assets/images/logo.svg",
+                    height: 80,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: appTheme.displayMode == PaneDisplayMode.open
+                    ? const Icon(FluentIcons.close_pane)
+                    : const Icon(FluentIcons.open_pane),
+                onPressed: () {
+                  appTheme.displayMode =
+                      appTheme.displayMode == PaneDisplayMode.open
+                          ? PaneDisplayMode.compact
+                          : PaneDisplayMode.open;
+                },
+              ),
+            ],
           ),
+          // child: ShaderMask(
+          //   shaderCallback: (rect) {
+          //     final color = appTheme.color.defaultBrushFor(
+          //       theme.brightness,
+          //     );
+          //     return LinearGradient(
+          //       colors: [
+          //         color,
+          //         color,
+          //       ],
+          //     ).createShader(rect);
+          //   },
+
+          //   // child: const FlutterLogo(
+          //   //   style: FlutterLogoStyle.horizontal,
+          //   //   size: 80.0,
+          //   //   textColor: Colors.white,
+          //   //   duration: Duration.zero,
+          //   // ),
+          // ),
         ),
         displayMode: appTheme.displayMode,
         indicator: () {
-          // switch (appTheme.indicator) {
-          //   case NavigationIndicators.end:
-          //     return const EndNavigationIndicator();
-          //   case NavigationIndicators.sticky:
-          //   default:
-          //     return const StickyNavigationIndicator();
-          // }
+          switch (appTheme.indicator) {
+            case NavigationIndicators.end:
+              return const EndNavigationIndicator();
+            case NavigationIndicators.sticky:
+            default:
+              return const StickyNavigationIndicator();
+          }
         }(),
         items: originalItems,
         autoSuggestBox: Builder(builder: (context) {

@@ -4,6 +4,7 @@ import 'package:admin/model/conclusive_Raw_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/local_data_helper.dart';
 import '../features/auth/views/login_screen.dart';
 import '../features/dashboard/views/dashboardScreen/dashboard_screen.dart';
 import '../features/dashboard/views/liveData/conclusive_raw_live_data_screen.dart';
@@ -28,6 +29,11 @@ final router = GoRouter(
           shellContext: _shellNavigatorKey.currentContext,
           child: child,
         );
+      },
+      redirect: (context, state) async {
+        if (await LocalDataHelper.getUserToken() == "") {
+          return AppRoutes.login;
+        }
       },
       routes: [
         GoRoute(
