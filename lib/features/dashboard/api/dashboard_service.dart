@@ -1,10 +1,14 @@
 import 'package:admin/core/model/response_model.dart';
 import 'package:admin/model/conclusive_Raw_data_model.dart';
+import 'package:admin/model/farmer_pond_info_model.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/local_data_helper.dart';
 import '../../../core/network/base_api_service.dart';
 import '../../../model/calibration_values.dart';
+import '../../../model/farm_model.dart';
+import '../../../model/pond_model.dart';
+import '../../../shared/constant/app_constants.dart';
 
 class SensorEndpoint {
   static const sensorCaliberation = '/sensorCalibration/';
@@ -84,6 +88,24 @@ class SensorService extends BaseApiService {
           .map<ConclusiveOrRawDataModel>(
               (e) => ConclusiveOrRawDataModel.fromMap(e))
           .toList(),
+    );
+    return resModel;
+  }
+
+  Future<ResponseModel> getfarmerpondinfo() async {
+    String token = await LocalDataHelper.getUserToken();
+
+    var res = await get(
+      "${AppConstants.baseUrl}/admin/getfarmerpondinfo",
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<FarmerPondInfoModel>(
+      message: res.data["message"],
+      error: res.data["error"],
+      result: FarmerPondInfoModel.fromMap(res.data["result"]),
     );
     return resModel;
   }

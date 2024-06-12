@@ -1,6 +1,7 @@
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../../constant/font_helper.dart';
 import '../../constant/global_variables.dart';
@@ -25,6 +26,7 @@ class MyTextField extends StatefulWidget {
   final bool showLabel;
   final Function(String)? onChanged;
   final bool showCounter;
+  final FocusNode? focusNode;
   const MyTextField({
     Key? key,
     this.textStyle,
@@ -48,6 +50,7 @@ class MyTextField extends StatefulWidget {
     this.showLabel = true,
     this.onChanged,
     this.showCounter = false,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -69,6 +72,7 @@ class _MyTextFieldState extends State<MyTextField> {
           TextFormField(
             controller: widget.controller,
             // initialValue: widget.initialValue,
+               focusNode: widget.focusNode,
             validator: (val) {
               if (widget.isValidate) {
                 // if (widget.validator == null) {
@@ -344,6 +348,130 @@ class _DropdownFormFieldState extends State<DropdownFormField> {
     );
   }
 }
+
+// class DropdownFormFieldByModel<T> extends StatefulWidget {
+//   const DropdownFormFieldByModel({
+//     super.key,
+//     required this.hintText,
+//     required this.dropDownItems,
+//     this.labelText,
+//     this.controller,
+//     this.isValidate = false,
+//     this.isReadOnly = false,
+//     this.value,
+//     this.validator,
+//     this.onChange,
+//   });
+
+//   final String hintText;
+//   final String? labelText;
+//   final List<DropdownMenuItem<T>> dropDownItems;
+//   final TextEditingController? controller;
+//   final bool isValidate;
+//   final bool isReadOnly;
+//   final T? value;
+//   final String? Function(T?)? validator;
+//   final void Function(T?)? onChange;
+
+//   @override
+//   State<DropdownFormFieldByModel<T>> createState() =>
+//       _DropdownFormFieldByModelState<T>();
+// }
+
+// class _DropdownFormFieldByModelState<T>
+//     extends State<DropdownFormFieldByModel<T>> {
+//   T? _currentSelectedValue;
+//   String errorText = '';
+//   bool _isDropdownOpen = false;
+//   final TextEditingController _typeAheadController = TextEditingController();
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _currentSelectedValue = widget.value;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return IgnorePointer(
+//       ignoring: widget.isReadOnly,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         mainAxisAlignment: MainAxisAlignment.start,
+//         children: [
+//           GestureDetector(
+//             onTap: () {
+//               setState(() {
+//                 _isDropdownOpen = !_isDropdownOpen;
+//               });
+//             },
+//             child: Container(
+//               decoration: BoxDecoration(
+//                 border: Border.all(color: Colors.grey),
+//                 borderRadius: BorderRadius.circular(8.0),
+//               ),
+//               child: Row(
+//                 children: [
+//                   Expanded(
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(8.0),
+//                       child: Text(widget.hintText),
+//                     ),
+//                   ),
+//                   Icon(
+//                     _isDropdownOpen
+//                         ? Icons.keyboard_arrow_up
+//                         : Icons.keyboard_arrow_down,
+//                     color: Colors.black,
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//           if (_isDropdownOpen)
+//             TypeAheadField<T>(
+//               textFieldConfiguration: TextFieldConfiguration(
+//                 controller: _typeAheadController,
+//                 decoration: InputDecoration(
+//                   labelText: widget.labelText ?? widget.hintText,
+//                   floatingLabelBehavior: FloatingLabelBehavior.always,
+//                 ),
+//               ),
+//               suggestionsCallback: (pattern) {
+//                 return widget.dropDownItems
+//                     .where((item) => item.value
+//                         .toString()
+//                         .toLowerCase()
+//                         .contains(pattern.toLowerCase()))
+//                     .map((item) => item.value!)
+//                     .toList();
+//               },
+//               itemBuilder: (context, suggestion) {
+//                 return ListTile(
+//                   title: Text(suggestion.toString()),
+//                 );
+//               },
+//               onSuggestionSelected: (suggestion) {
+//                 setState(() {
+//                   _currentSelectedValue = suggestion;
+//                   _typeAheadController.text = suggestion.toString();
+//                   _isDropdownOpen = false;
+//                 });
+//                 if (widget.onChange != null) {
+//                   widget.onChange!(suggestion);
+//                 }
+//               },
+//             ),
+//           if (errorText.isNotEmpty)
+//             Text(
+//               errorText,
+//               style: TextStyle(color: Colors.red, fontSize: 12),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class DropdownFormFieldByModel<T> extends StatefulWidget {
   const DropdownFormFieldByModel({

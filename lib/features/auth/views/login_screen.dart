@@ -18,8 +18,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  PondModel? pond;
-
   final formKey = GlobalKey<FormState>();
 
   final AuthController controller = Get.isRegistered<AuthController>()

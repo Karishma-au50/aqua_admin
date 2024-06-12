@@ -3,10 +3,12 @@ import 'dart:html';
 import 'dart:ui' as ui;
 
 import 'package:admin/shared/constant/global_variables.dart';
+import 'package:admin/shared/widgets/buttons/my_button.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
@@ -61,32 +63,6 @@ class _LineChartState extends State<LineChart> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 30.0, top: 15),
-          child: InkWell(
-            onTap: () {
-              _renderPdf();
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  "Download Pdf",
-                  style: GlobalFonts.ts12px400w(
-                      color: AppColors.kcCaptionLightGray),
-                ),
-                SizedBox(
-                  width: 8,
-                ),
-                Icon(
-                  Icons.download_outlined,
-                  size: 20,
-                  color: greenColor,
-                )
-              ],
-            ),
-          ),
-        ),
-        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
           child: SizedBox(
             height: 300,
@@ -115,7 +91,14 @@ class _LineChartState extends State<LineChart> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: ['5m', '6m', '4m', '3m'].map((item) {
+                children: [
+                  '5 mins',
+                  '10 mins',
+                  '15 mins',
+                  '30 mins',
+                  '45 mins',
+                  '60 mins'
+                ].map((item) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: TextButton(
@@ -127,18 +110,21 @@ class _LineChartState extends State<LineChart> {
                         backgroundColor: Colors.white,
                       ),
                       onPressed: () {},
-                      child: Text(
-                        item,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff767B84),
-                          shadows: [
-                            Shadow(
-                              color: Color(0xFFD6D6D6),
-                              offset: Offset(0, 3),
-                              blurRadius: 4,
-                            ),
-                          ],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          item,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff767B84),
+                            shadows: [
+                              Shadow(
+                                color: Color(0xFFD6D6D6),
+                                offset: Offset(0, 3),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -146,10 +132,18 @@ class _LineChartState extends State<LineChart> {
                 }).toList(),
               ),
             )),
-        // ElevatedButton(
-        //   onPressed: _renderPdf,
-        //   child: const Text('Download PDF'),
-        // ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: MyButton(
+              width: 100,
+              textStyle: GlobalFonts.ts14px600w,
+              text: "EXPORT PDF",
+              onPressed: _renderPdf,
+            ),
+          ),
+        ),
       ],
     );
   }

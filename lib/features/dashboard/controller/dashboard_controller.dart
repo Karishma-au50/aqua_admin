@@ -1,5 +1,6 @@
 import 'package:admin/features/dashboard/api/dashboard_service.dart';
 import 'package:admin/model/conclusive_Raw_data_model.dart';
+import 'package:admin/model/farmer_pond_info_model.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../../core/exceptions/custom_exceptions.dart';
@@ -53,6 +54,20 @@ class SensorController extends GetxController {
     try {
       final res = await _api.conclusiveOrRawLiveData(
           typeId, dlNo, networkNo, collectionType, count);
+      if (!res.error) {
+        return res.result!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
+    }
+  }
+
+  Future<FarmerPondInfoModel?> getfarmerpondinfo() async {
+    try {
+      final res = await _api.getfarmerpondinfo();
       if (!res.error) {
         return res.result!;
       } else {
