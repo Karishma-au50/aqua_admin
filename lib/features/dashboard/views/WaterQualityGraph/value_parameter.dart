@@ -5,6 +5,7 @@ import 'package:admin/shared/widgets/buttons/my_button.dart';
 import 'package:admin/shared/widgets/inputs/my_text_field.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/get_core.dart';
@@ -88,20 +89,41 @@ class _ValueParameterState extends State<ValueParameter> {
     '45 minutes',
     '60 minutes'
   ];
-  // List<bool> _isSelected = [false, false, false, false, false, false];
-  // List<bool> _isSelectedFrequency = [false, false, false, false, false, false];
   final TextEditingController _pondController = TextEditingController();
   final TextEditingController _farmController = TextEditingController();
   final List<String> _selectedFarms = [];
   final List<String> _selectedPonds = [];
-  //   final TextEditingController _farmController = TextEditingController();
-  // final List<String> _selectedFarms = [];
-  // Replace farmerPondInfo with your actual data source
-  // final farmerPondInfo = ValueNotifier<FarmData>(FarmData());
+
+  DateTimeRange? selectedDateRange;
+  Future<void> _selectDateRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: child,
+            ),
+          ),
+        );
+      },
+    );
+
+    if (picked != null && picked != selectedDateRange) {
+      setState(() {
+        selectedDateRange = picked;
+      });
+    }
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
     controller.getfarmerpondinfo().then((value) {
       if (value != null) {
         farmerPondInfo(value);
@@ -129,9 +151,9 @@ class _ValueParameterState extends State<ValueParameter> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.15,
+              height: MediaQuery.of(context).size.height * 0.12,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.green),
+                border: Border.all(color: greenColor),
                 borderRadius: BorderRadius.circular(0),
               ),
               child: Row(
@@ -153,29 +175,32 @@ class _ValueParameterState extends State<ValueParameter> {
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black)),
-                      child: TypeAheadField<String>(
-                        builder: (context, controller, focusNode) {
-                          return MyTextField(
-                            controller: controller,
-                            hintText: _selectedFarms.join(', '),
-                            focusNode: focusNode,
-                            isReadOny: true,
-                          );
-                        },
-                        onSelected: (value) {},
-                        suggestionsCallback: (search) {
-                          return farmerPondInfo.value.farms!
-                              .where((ele) =>
-                                  ele.name.contains(search) ||
-                                  ele.farmId.toString().contains(search))
-                              .map((e) => "${e.name} (${e.farmId})")
-                              .toList();
-                        },
-                        itemBuilder: (context, suggestion) {
-                          return CheckboxListTile(
+                    child:
+                     TypeAheadField<String>(
+                      builder: (context, controller, focusNode) {
+                        return MyTextField(
+                          controller: controller,
+                          hintText: _selectedFarms.isEmpty
+                              ? "Select Farm"
+                              : _selectedFarms.join(', '),
+                          focusNode: focusNode,
+                          labelText: "FARMS",
+                          isReadOny: true,
+                        );
+                      },
+                      onSelected: (value) {},
+                      suggestionsCallback: (search) {
+                        return farmerPondInfo.value.farms!
+                            .where((ele) =>
+                                ele.name.contains(search) ||
+                                ele.farmId.toString().contains(search))
+                            .map((e) => "${e.name} (${e.farmId})")
+                            .toList();
+                      },
+                      itemBuilder: (context, suggestion) {
+                        return Container(
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: CheckboxListTile(
                             title: Text(suggestion),
                             value: _selectedFarms.contains(suggestion),
                             onChanged: (bool? selected) {
@@ -190,52 +215,62 @@ class _ValueParameterState extends State<ValueParameter> {
                                 _farmController.clear();
                               });
                             },
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(
                     width: 20,
                   ),
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black)),
-                      child: TypeAheadField<String>(
-                        onSelected: (value) {},
-                        suggestionsCallback: (search) {
-                          return farmerPondInfo.value.farms!
-                              .where((ele) =>
-                                  ele.name
-                                      .toLowerCase()
-                                      .contains(search.toLowerCase()) ||
-                                  ele.farmId
-                                      .toString()
-                                      .toLowerCase()
-                                      .contains(search.toLowerCase()))
-                              .map((e) => "${e.name} (${e.farmId})")
-                              .toList();
-                        },
-                        itemBuilder: (context, suggestion) {
-                          return CheckboxListTile(
+                    child: TypeAheadField<String>(
+                      builder: (context, controller, focusNode) {
+                        return MyTextField(
+                          controller: _pondController,
+                          hintText: _selectedPonds.isEmpty
+                              ? "Select Pond"
+                              : _selectedPonds.join(', '),
+                          focusNode: focusNode,
+                          labelText: "PONDS",
+                          isReadOny: true,
+                        );
+                      },
+                      onSelected: (value) {},
+                      suggestionsCallback: (search) {
+                        return farmerPondInfo.value.ponds!
+                            .where((ele) =>
+                                ele.name!
+                                    .toLowerCase()
+                                    .contains(search.toLowerCase()) ||
+                                ele.pondId
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(search.toLowerCase()))
+                            .map((e) => "${e.name} (${e.pondId})")
+                            .toList();
+                      },
+                      itemBuilder: (context, suggestion) {
+                        return Container(
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: CheckboxListTile(
                             title: Text(suggestion),
-                            value: _selectedFarms.contains(suggestion),
+                            value: _selectedPonds.contains(suggestion),
                             onChanged: (bool? selected) {
                               setState(() {
                                 if (selected == true &&
-                                    !_selectedFarms.contains(suggestion)) {
-                                  _selectedFarms.add(suggestion);
+                                    !_selectedPonds.contains(suggestion)) {
+                                  _selectedPonds.add(suggestion);
                                 } else if (selected == false &&
-                                    _selectedFarms.contains(suggestion)) {
-                                  _selectedFarms.remove(suggestion);
+                                    _selectedPonds.contains(suggestion)) {
+                                  _selectedPonds.remove(suggestion);
                                 }
-                                _farmController.clear();
+                                _pondController.clear();
                               });
                             },
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -306,7 +341,7 @@ class _ValueParameterState extends State<ValueParameter> {
               height: 10,
             ),
             Container(
-              height: context.height * 0.15,
+              height: context.height * 0.12,
               decoration: BoxDecoration(
                   border: Border.all(color: greenColor),
                   borderRadius: BorderRadius.circular(0)),
@@ -335,26 +370,39 @@ class _ValueParameterState extends State<ValueParameter> {
                   ),
                   Expanded(
                     child: MyTextField(
+                      labelText: "From - To",
+                      hintText: selectedDateRange == null
+                          ? 'Select Date Range'
+                          : '${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.start)}  -  ${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.end)}',
                       isReadOny: true,
-                      suffixIcon: const Icon(Icons.calendar_month_outlined),
-                      labelText: '',
-                      hintText: _startDate == null
-                          ? 'FROM'
-                          : DateFormat.yMd().format(_startDate!),
-                      onTap: () => _selectStartDate(context),
+                      onTap: () {
+                        _selectDateRange(context);
+                      },
                     ),
                   ),
-                  Expanded(
-                    child: MyTextField(
-                      isReadOny: true,
-                      suffixIcon: const Icon(Icons.calendar_month_outlined),
-                      labelText: '',
-                      hintText: _endDate == null
-                          ? 'TO'
-                          : DateFormat.yMd().format(_endDate!),
-                      onTap: () => _selectEndDate(context),
-                    ),
-                  )
+
+                  // Expanded(
+                  //   child: MyTextField(
+                  //     isReadOny: true,
+                  //     suffixIcon: const Icon(Icons.calendar_month_outlined),
+                  //     labelText: '',
+                  //     hintText: _startDate == null
+                  //         ? 'FROM'
+                  //         : DateFormat.yMd().format(_startDate!),
+                  //     onTap: () => _selectStartDate(context),
+                  //   ),
+                  // ),
+                  // Expanded(
+                  //   child: MyTextField(
+                  //     isReadOny: true,
+                  //     suffixIcon: const Icon(Icons.calendar_month_outlined),
+                  //     labelText: '',
+                  //     hintText: _endDate == null
+                  //         ? 'TO'
+                  //         : DateFormat.yMd().format(_endDate!),
+                  //     onTap: () => _selectEndDate(context),
+                  //   ),
+                  // )
                 ],
               ),
             ),
