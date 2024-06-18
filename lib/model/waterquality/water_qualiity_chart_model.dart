@@ -13,7 +13,9 @@ class WaterQualityChartModel {
     return WaterQualityChartModel(
       pondId: json["pondId"],
       sensor: json["sensor"],
-      data: json["data"].map((ele) => SensorChartModel.fromJson(json)).toList(),
+      data: json["data"]
+          .map<SensorChartModel>((ele) => SensorChartModel.fromJson(ele))
+          .toList(),
     );
   }
 }
@@ -28,8 +30,8 @@ class SensorChartModel {
 
   factory SensorChartModel.fromJson(Map<String, dynamic> json) {
     return SensorChartModel(
-      derivedTime: json["derivedTime"],
-      value: json["value"],
+      derivedTime: json["derivedTime"] ?? 0,
+      value: json["value"] ?? 0,
     );
   }
 

@@ -1,4 +1,3 @@
-import 'package:admin/features/dashboard/controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,6 +6,7 @@ import '../../../../shared/constant/font_helper.dart';
 import '../../../../shared/constant/global_variables.dart';
 import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
+import '../../controller/sensor_controller.dart';
 
 class SensorCalibration extends StatefulWidget {
   const SensorCalibration({

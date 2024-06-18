@@ -1,19 +1,17 @@
-import 'package:admin/model/farmer_pond_info_model.dart';
-import 'package:admin/shared/constant/app_colors.dart';
-import 'package:admin/shared/constant/font_helper.dart';
-import 'package:admin/shared/widgets/buttons/my_button.dart';
-import 'package:admin/shared/widgets/inputs/my_text_field.dart';
-
+import 'package:admin/features/dashboard/controller/water_quality_controller.dart';
+import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/get_core.dart';
-import 'package:get/get_utils/get_utils.dart';
 import 'package:intl/intl.dart';
-
+import '../../../../model/farm_model.dart';
+import '../../../../model/farmer_pond_info_model.dart';
+import '../../../../model/pond_model.dart';
+import '../../../../shared/constant/app_colors.dart';
+import '../../../../shared/constant/font_helper.dart';
 import '../../../../shared/constant/global_variables.dart';
-import '../../controller/dashboard_controller.dart';
+import '../../../../shared/widgets/buttons/my_button.dart';
+import '../../../../shared/widgets/inputs/my_text_field.dart';
 
 class ValueParameter extends StatefulWidget {
   const ValueParameter({super.key});
@@ -30,9 +28,13 @@ class _ValueParameterState extends State<ValueParameter> {
   final TextEditingController _frequencyController = TextEditingController();
   Rx<FarmerPondInfoModel> farmerPondInfo = FarmerPondInfoModel().obs;
 
-  final SensorController controller = Get.isRegistered<SensorController>()
-      ? Get.find()
-      : Get.put(SensorController());
+  List<FarmModel> selectedFarms = [];
+  List<PondModel> selectedPonds = [];
+
+  final WaterQualityController controller =
+      Get.isRegistered<WaterQualityController>()
+          ? Get.find()
+          : Get.put(WaterQualityController());
   String frequencyValue = '5';
   String parameterValue = 'PH';
   List<String> options = [
@@ -47,39 +49,39 @@ class _ValueParameterState extends State<ValueParameter> {
     "PH & NH3",
     "NH4 & NH3"
   ];
-  DateTime? _startDate;
-  DateTime? _endDate;
+  // DateTime? _startDate;
+  // DateTime? _endDate;
 
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null && picked != _startDate) {
-      setState(() {
-        _startDate = picked;
-        if (_endDate != null && _endDate!.isBefore(_startDate!)) {
-          _endDate = _startDate;
-        }
-      });
-    }
-  }
+  // Future<void> _selectStartDate(BuildContext context) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: _startDate ?? DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2030),
+  //   );
+  //   if (picked != null && picked != _startDate) {
+  //     setState(() {
+  //       _startDate = picked;
+  //       if (_endDate != null && _endDate!.isBefore(_startDate!)) {
+  //         _endDate = _startDate;
+  //       }
+  //     });
+  //   }
+  // }
 
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _endDate ?? DateTime.now(),
-      firstDate: _startDate ?? DateTime.now(),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null && picked != _endDate) {
-      setState(() {
-        _endDate = picked;
-      });
-    }
-  }
+  // Future<void> _selectEndDate(BuildContext context) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: _endDate ?? DateTime.now(),
+  //     firstDate: _startDate ?? DateTime.now(),
+  //     lastDate: DateTime(2030),
+  //   );
+  //   if (picked != null && picked != _endDate) {
+  //     setState(() {
+  //       _endDate = picked;
+  //     });
+  //   }
+  // }
 
   List<String> frequency = [
     '5 minutes',
@@ -91,8 +93,8 @@ class _ValueParameterState extends State<ValueParameter> {
   ];
   final TextEditingController _pondController = TextEditingController();
   final TextEditingController _farmController = TextEditingController();
-  final List<String> _selectedFarms = [];
-  final List<String> _selectedPonds = [];
+  // final List<String> _selectedFarms = [];
+  // final List<String> _selectedPonds = [];
 
   DateTimeRange? selectedDateRange;
   Future<void> _selectDateRange(BuildContext context) async {
@@ -175,42 +177,46 @@ class _ValueParameterState extends State<ValueParameter> {
                     ),
                   ),
                   Expanded(
-                    child:
-                     TypeAheadField<String>(
+                    child: TypeAheadField<FarmModel>(
+                      controller: _farmController,
                       builder: (context, controller, focusNode) {
                         return MyTextField(
                           controller: controller,
-                          hintText: _selectedFarms.isEmpty
+                          hintText: selectedFarms.isEmpty
                               ? "Select Farm"
-                              : _selectedFarms.join(', '),
+                              : selectedFarms
+                                  .map((e) => "${e.name} (${e.farmId})")
+                                  .join(', '),
                           focusNode: focusNode,
                           labelText: "FARMS",
-                          isReadOny: true,
                         );
                       },
-                      onSelected: (value) {},
+                      onSelected: (value) {
+                        print(value);
+                      },
                       suggestionsCallback: (search) {
                         return farmerPondInfo.value.farms!
                             .where((ele) =>
                                 ele.name.contains(search) ||
                                 ele.farmId.toString().contains(search))
-                            .map((e) => "${e.name} (${e.farmId})")
+                            // .map((e) => "${e.name} (${e.farmId})")
                             .toList();
                       },
                       itemBuilder: (context, suggestion) {
                         return Container(
-                          decoration: BoxDecoration(color: Colors.white),
+                          decoration: const BoxDecoration(color: Colors.white),
                           child: CheckboxListTile(
-                            title: Text(suggestion),
-                            value: _selectedFarms.contains(suggestion),
+                            title: Text(
+                                "${suggestion.name} (${suggestion.farmId})"),
+                            value: selectedFarms.contains(suggestion),
                             onChanged: (bool? selected) {
                               setState(() {
                                 if (selected == true &&
-                                    !_selectedFarms.contains(suggestion)) {
-                                  _selectedFarms.add(suggestion);
+                                    !selectedFarms.contains(suggestion)) {
+                                  selectedFarms.add(suggestion);
                                 } else if (selected == false &&
-                                    _selectedFarms.contains(suggestion)) {
-                                  _selectedFarms.remove(suggestion);
+                                    selectedFarms.contains(suggestion)) {
+                                  selectedFarms.remove(suggestion);
                                 }
                                 _farmController.clear();
                               });
@@ -224,16 +230,18 @@ class _ValueParameterState extends State<ValueParameter> {
                     width: 20,
                   ),
                   Expanded(
-                    child: TypeAheadField<String>(
+                    child: TypeAheadField<PondModel>(
+                      controller: _pondController,
                       builder: (context, controller, focusNode) {
                         return MyTextField(
-                          controller: _pondController,
-                          hintText: _selectedPonds.isEmpty
+                          controller: controller,
+                          hintText: selectedPonds.isEmpty
                               ? "Select Pond"
-                              : _selectedPonds.join(', '),
+                              : selectedPonds
+                                  .map((e) => "${e.name} (${e.pondId})")
+                                  .join(', '),
                           focusNode: focusNode,
                           labelText: "PONDS",
-                          isReadOny: true,
                         );
                       },
                       onSelected: (value) {},
@@ -247,23 +255,24 @@ class _ValueParameterState extends State<ValueParameter> {
                                     .toString()
                                     .toLowerCase()
                                     .contains(search.toLowerCase()))
-                            .map((e) => "${e.name} (${e.pondId})")
+                            // .map((e) => "${e.name} (${e.pondId})")
                             .toList();
                       },
                       itemBuilder: (context, suggestion) {
                         return Container(
-                          decoration: BoxDecoration(color: Colors.white),
+                          decoration: const BoxDecoration(color: Colors.white),
                           child: CheckboxListTile(
-                            title: Text(suggestion),
-                            value: _selectedPonds.contains(suggestion),
+                            title: Text(
+                                "${suggestion.name} (${suggestion.pondId})"),
+                            value: selectedPonds.contains(suggestion),
                             onChanged: (bool? selected) {
                               setState(() {
                                 if (selected == true &&
-                                    !_selectedPonds.contains(suggestion)) {
-                                  _selectedPonds.add(suggestion);
+                                    !selectedPonds.contains(suggestion)) {
+                                  selectedPonds.add(suggestion);
                                 } else if (selected == false &&
-                                    _selectedPonds.contains(suggestion)) {
-                                  _selectedPonds.remove(suggestion);
+                                    selectedPonds.contains(suggestion)) {
+                                  selectedPonds.remove(suggestion);
                                 }
                                 _pondController.clear();
                               });
@@ -380,29 +389,6 @@ class _ValueParameterState extends State<ValueParameter> {
                       },
                     ),
                   ),
-
-                  // Expanded(
-                  //   child: MyTextField(
-                  //     isReadOny: true,
-                  //     suffixIcon: const Icon(Icons.calendar_month_outlined),
-                  //     labelText: '',
-                  //     hintText: _startDate == null
-                  //         ? 'FROM'
-                  //         : DateFormat.yMd().format(_startDate!),
-                  //     onTap: () => _selectStartDate(context),
-                  //   ),
-                  // ),
-                  // Expanded(
-                  //   child: MyTextField(
-                  //     isReadOny: true,
-                  //     suffixIcon: const Icon(Icons.calendar_month_outlined),
-                  //     labelText: '',
-                  //     hintText: _endDate == null
-                  //         ? 'TO'
-                  //         : DateFormat.yMd().format(_endDate!),
-                  //     onTap: () => _selectEndDate(context),
-                  //   ),
-                  // )
                 ],
               ),
             ),
@@ -412,8 +398,31 @@ class _ValueParameterState extends State<ValueParameter> {
             MyButton(
                 text: "Submit",
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {}
-                })
+                  // if (_formKey.currentState!.validate()) {
+                  if (selectedFarms.isEmpty) {
+                    MyToasts.toastError("Please select farm");
+                    return;
+                  }
+                  if (selectedPonds.isEmpty) {
+                    MyToasts.toastError("Please select pond");
+                    return;
+                  }
+                  if (selectedDateRange == null) {
+                    MyToasts.toastError("Please select date range");
+                    return;
+                  }
+
+                  final startDate = selectedDateRange!.start;
+                  final endDate = selectedDateRange!.end;
+                  final farmIds = selectedFarms.map((e) => e.farmId!).toList();
+                  final pondIds = selectedPonds.map((e) => e.pondId!).toList();
+                  // final sensors = parameterValue.split(' & ');
+
+                  await controller.getWaterQualityChartData(
+                      pondIds, [parameterValue], startDate, endDate);
+                }
+                // },
+                )
           ],
         ),
       ),

@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../../core/local_data_helper.dart';
 import '../../../routes/app_routes.dart';
@@ -14,9 +12,9 @@ class AuthController extends GetxController {
   Future<void> login({required String mobile, required String password}) async {
     try {
       final res = await _api.login(mobile, password);
-      if (!res.error!) {
+      if (!res.error) {
         MyToasts.toastSuccess(res.message ?? "Success");
-        LocalDataHelper.setUserToken(res.result);
+        await LocalDataHelper.setUserToken(res.result);
         NavHelper.offAllToNamed(AppRoutes.dashboard);
       } else {
         MyToasts.toastError(res.message ?? "Error");

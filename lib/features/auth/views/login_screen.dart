@@ -1,4 +1,3 @@
-import 'package:admin/model/pond_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -49,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: AuthBaseView(
               child: Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 500),
+                  constraints: const BoxConstraints(maxWidth: 500),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -58,10 +57,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           children: [
                             SizedBox(height: context.height * .15),
-                            SvgPicture.asset(
-                              "assets/images/logo.svg",
-                              // color: greenColor,
-                              height: context.height * .16,
+                            Image.asset(
+                              "assets/images/logo.png",
+                              height: 80,
                             ),
                           ],
                         ),

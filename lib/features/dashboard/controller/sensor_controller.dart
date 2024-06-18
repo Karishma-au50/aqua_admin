@@ -1,4 +1,3 @@
-import 'package:admin/features/dashboard/api/dashboard_service.dart';
 import 'package:admin/model/conclusive_Raw_data_model.dart';
 import 'package:admin/model/farmer_pond_info_model.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -6,6 +5,7 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import '../../../core/exceptions/custom_exceptions.dart';
 import '../../../model/calibration_values.dart';
 import '../../../shared/widgets/toast/my_toast.dart';
+import '../api/sensor_service.dart';
 
 class SensorController extends GetxController {
   final _api = SensorService();

@@ -2,18 +2,19 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:ui' as ui;
 
-import 'package:admin/shared/constant/global_variables.dart';
+import 'package:admin/model/waterquality/water_qualiity_chart_model.dart';
 import 'package:admin/shared/widgets/buttons/my_button.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-import '../../../../shared/constant/app_colors.dart';
 import '../../../../shared/constant/font_helper.dart';
+import '../../controller/water_quality_controller.dart';
 
 class LineChart extends StatefulWidget {
   const LineChart({super.key});
@@ -23,6 +24,7 @@ class LineChart extends StatefulWidget {
 }
 
 class _LineChartState extends State<LineChart> {
+  final WaterQualityController controller = Get.find();
   final GlobalKey<SfCartesianChartState> _chartKey = GlobalKey();
   List<Map<String, dynamic>> chartData = [
     {
@@ -66,20 +68,34 @@ class _LineChartState extends State<LineChart> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
           child: SizedBox(
             height: 300,
-            child: SfCartesianChart(
-              key: _chartKey,
-              tooltipBehavior: TooltipBehavior(enable: true),
-              series: _buildLineSeries(),
-              trackballBehavior: TrackballBehavior(
-                enable: true,
-                activationMode: ActivationMode.none,
-                tooltipSettings: InteractiveTooltip(
-                  enable: true,
-                  color: Colors.black,
-                  textStyle: TextStyle(color: Colors.white),
+            child: Obx(() {
+              if (controller.waterQualityChartModel.isEmpty) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return SfCartesianChart(
+                key: _chartKey,
+                primaryXAxis: DateTimeAxis(
+                  majorGridLines: const MajorGridLines(width: 0),
+                  edgeLabelPlacement: EdgeLabelPlacement.shift,
+                  intervalType: DateTimeIntervalType.auto,
+                  dateFormat: DateFormat.yMd(),
+                  // labelIntersectAction: AxisLabelIntersectAction.rotate45,
                 ),
-              ),
-            ),
+                tooltipBehavior: TooltipBehavior(enable: true),
+                series: _buildLineSeries(),
+                trackballBehavior: TrackballBehavior(
+                  enable: true,
+                  activationMode: ActivationMode.none,
+                  tooltipSettings: const InteractiveTooltip(
+                    enable: true,
+                    color: Colors.black,
+                    textStyle: TextStyle(color: Colors.white),
+                  ),
+                ),
+              );
+            }),
           ),
         ),
         Container(
@@ -148,7 +164,7 @@ class _LineChartState extends State<LineChart> {
     );
   }
 
-  List<LineSeries<Map<String, dynamic>, int>> _buildLineSeries() {
+  List<LineSeries<SensorChartModel, DateTime>> _buildLineSeries() {
     int numSeries = chartData.first['series'].length;
 
     List<Color> colors = [
@@ -160,15 +176,37 @@ class _LineChartState extends State<LineChart> {
       Colors.cyan
     ];
 
-    return List.generate(numSeries, (index) {
-      return LineSeries<Map<String, dynamic>, int>(
-        dataSource: chartData,
-        xValueMapper: (data, _) => data['year'],
-        yValueMapper: (data, _) => data['series'][index],
-        markerSettings: const MarkerSettings(isVisible: true),
-        color: colors[index % colors.length],
-      );
-    });
+    // return List.generate(numSeries, (index) {
+    //   return LineSeries<Map<String, dynamic>, int>(
+    //     dataSource: chartData,
+    //     xValueMapper: (data, _) => data['year'],
+    //     yValueMapper: (data, _) => data['series'][index],
+    //     markerSettings: const MarkerSettings(isVisible: true),
+    //     color: colors[index % colors.length],
+    //   );
+    // });
+
+    return controller.waterQualityChartModel
+        .map(
+          (element) => LineSeries<SensorChartModel, DateTime>(
+            dataSource: element.data
+                .where(
+                    (element) => element.value != 0 && element.derivedTime != 0)
+                .toList(),
+            xValueMapper: (data, _) => data.dateTime,
+            yValueMapper: (data, _) => data.value,
+            markerSettings: const MarkerSettings(isVisible: false),
+            color: colors[controller.waterQualityChartModel.indexOf(element) %
+                colors.length],
+            name: "${element.sensor} (${element.pondId})",
+            emptyPointSettings: const EmptyPointSettings(
+              mode: EmptyPointMode.gap,
+              color: Colors.transparent,
+              borderColor: Colors.transparent,
+            ),
+          ),
+        )
+        .toList();
   }
 
   Future<void> _renderPdf() async {
@@ -200,8 +238,8 @@ class _LineChartState extends State<LineChart> {
       // Draw company logo at the top-left
       const double logoWidth = 85;
       const double logoHeight = 45;
-      page.graphics
-          .drawImage(logoBitmap, Rect.fromLTWH(10, 10, logoWidth, logoHeight));
+      page.graphics.drawImage(
+          logoBitmap, const Rect.fromLTWH(10, 10, logoWidth, logoHeight));
 
       // Draw chart heading at the top-center
       const String chartHeading = 'Water Quality Parameters Report';

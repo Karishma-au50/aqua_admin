@@ -1,14 +1,13 @@
 import 'package:admin/routes/app_routes.dart';
 import 'package:admin/shared/utils/nav_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/constant/font_helper.dart';
 import '../../../../shared/constant/global_variables.dart';
 import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
-import '../../controller/dashboard_controller.dart';
+import '../../controller/sensor_controller.dart';
 
 class DashBoardScreen extends StatelessWidget {
   const DashBoardScreen({
@@ -145,7 +144,7 @@ class _SenserCaliberationDialogeState extends State<SenserCaliberationDialoge> {
       width: 400,
       child: Dialog(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 300),
+          constraints: const BoxConstraints(maxWidth: 300),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView(
@@ -209,7 +208,7 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
       width: 400,
       child: Dialog(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 300),
+          constraints: const BoxConstraints(maxWidth: 300),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView(

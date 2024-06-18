@@ -160,8 +160,12 @@ class _MainScreenState extends State<MainScreen> {
           // }
           return Align(
             // alignment: AlignmentDirectional.centerStart,
-            child: SvgPicture.asset(
-              "assets/images/logo.svg",
+            // child: SvgPicture.asset(
+            //   "assets/images/logo.svg",
+            //   height: 80,
+            // ),
+            child: Image.asset(
+              "assets/images/logo.png",
               height: 80,
             ),
           );

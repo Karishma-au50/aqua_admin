@@ -34,6 +34,7 @@ final router = GoRouter(
         if (await LocalDataHelper.getUserToken() == "") {
           return AppRoutes.login;
         }
+        return state.fullPath;
       },
       routes: [
         GoRoute(

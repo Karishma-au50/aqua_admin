@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../../shared/constant/font_helper.dart';
 import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
-import '../../controller/dashboard_controller.dart';
+import '../../controller/sensor_controller.dart';
 
 class ConclusiveOrRawLiveDataScreen extends StatefulWidget {
   const ConclusiveOrRawLiveDataScreen({super.key, this.id});

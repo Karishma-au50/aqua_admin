@@ -1,7 +1,6 @@
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../../constant/font_helper.dart';
 import '../../constant/global_variables.dart';
@@ -28,7 +27,7 @@ class MyTextField extends StatefulWidget {
   final bool showCounter;
   final FocusNode? focusNode;
   const MyTextField({
-    Key? key,
+    super.key,
     this.textStyle,
     this.controller,
     // this.initialValue,
@@ -51,7 +50,7 @@ class MyTextField extends StatefulWidget {
     this.onChanged,
     this.showCounter = false,
     this.focusNode,
-  }) : super(key: key);
+  });
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -72,7 +71,7 @@ class _MyTextFieldState extends State<MyTextField> {
           TextFormField(
             controller: widget.controller,
             // initialValue: widget.initialValue,
-               focusNode: widget.focusNode,
+            focusNode: widget.focusNode,
             validator: (val) {
               if (widget.isValidate) {
                 // if (widget.validator == null) {
@@ -475,7 +474,7 @@ class _DropdownFormFieldState extends State<DropdownFormField> {
 
 class DropdownFormFieldByModel<T> extends StatefulWidget {
   const DropdownFormFieldByModel({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.dropDownItems,
     this.labelText,
@@ -485,7 +484,7 @@ class DropdownFormFieldByModel<T> extends StatefulWidget {
     this.value,
     this.validator,
     this.onChange,
-  }) : super(key: key);
+  });
 
   final String hintText;
   final String? labelText;
