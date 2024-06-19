@@ -4,21 +4,11 @@ import 'package:toastification/toastification.dart';
 
 class MyToasts {
   static _getSimpleSnackbar({required String text, bool isError = false}) {
-    // Get.showSnackbar(
-    //   GetSnackBar(
-    //     message: text,
-    //     backgroundColor: isError ? Colors.red : Colors.green,
-    //     duration: const Duration(seconds: 2),
-    //     margin: const EdgeInsets.all(20),
-    //     borderRadius: 10,
-    //     dismissDirection: DismissDirection.horizontal,
-    //   ),
-    // );
     toastification.show(
-      title: Text(text),
-      autoCloseDuration: const Duration(seconds: 5),
-      backgroundColor: isError ? Colors.red : Colors.green,
-    );
+        title: Text(text),
+        autoCloseDuration: const Duration(seconds: 2),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        icon: Icon(isError ? Icons.info : Icons.done, color: Colors.white));
   }
 
   static toastSuccess(String text) {

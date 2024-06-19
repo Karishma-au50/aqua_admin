@@ -49,39 +49,6 @@ class _ValueParameterState extends State<ValueParameter> {
     "PH & NH3",
     "NH4 & NH3"
   ];
-  // DateTime? _startDate;
-  // DateTime? _endDate;
-
-  // Future<void> _selectStartDate(BuildContext context) async {
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: _startDate ?? DateTime.now(),
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2030),
-  //   );
-  //   if (picked != null && picked != _startDate) {
-  //     setState(() {
-  //       _startDate = picked;
-  //       if (_endDate != null && _endDate!.isBefore(_startDate!)) {
-  //         _endDate = _startDate;
-  //       }
-  //     });
-  //   }
-  // }
-
-  // Future<void> _selectEndDate(BuildContext context) async {
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: _endDate ?? DateTime.now(),
-  //     firstDate: _startDate ?? DateTime.now(),
-  //     lastDate: DateTime(2030),
-  //   );
-  //   if (picked != null && picked != _endDate) {
-  //     setState(() {
-  //       _endDate = picked;
-  //     });
-  //   }
-  // }
 
   List<String> frequency = [
     '5 minutes',
@@ -93,8 +60,6 @@ class _ValueParameterState extends State<ValueParameter> {
   ];
   final TextEditingController _pondController = TextEditingController();
   final TextEditingController _farmController = TextEditingController();
-  // final List<String> _selectedFarms = [];
-  // final List<String> _selectedPonds = [];
 
   DateTimeRange? selectedDateRange;
   Future<void> _selectDateRange(BuildContext context) async {
@@ -416,7 +381,6 @@ class _ValueParameterState extends State<ValueParameter> {
                   final endDate = selectedDateRange!.end;
                   final farmIds = selectedFarms.map((e) => e.farmId!).toList();
                   final pondIds = selectedPonds.map((e) => e.pondId!).toList();
-                  // final sensors = parameterValue.split(' & ');
 
                   await controller.getWaterQualityChartData(
                       pondIds, [parameterValue], startDate, endDate);

@@ -9,12 +9,13 @@ class WaterQualityController extends GetxController {
   final WaterQualityService _api = WaterQualityService();
   RxList<WaterQualityChartModel> waterQualityChartModel =
       <WaterQualityChartModel>[].obs;
+  FarmerPondInfoModel farmerPondInfoModel = FarmerPondInfoModel();
 
   Future<FarmerPondInfoModel?> getfarmerpondinfo() async {
     try {
       final res = await _api.getfarmerpondinfo();
       if (!res.error) {
-        return res.result!;
+        return farmerPondInfoModel = res.result!;
       } else {
         MyToasts.toastError(res.message ?? "Error");
         return null;

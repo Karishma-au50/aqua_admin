@@ -51,7 +51,7 @@ dependencies:
   flutter_typeahead: ^5.2.0
   intl: ^0.18.1
   toastification: ^2.0.0
-
+  textfield_tags: ^3.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
