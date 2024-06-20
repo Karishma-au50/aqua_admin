@@ -28,8 +28,8 @@ class _ValueParameterState extends State<ValueParameter> {
   final TextEditingController _frequencyController = TextEditingController();
   Rx<FarmerPondInfoModel> farmerPondInfo = FarmerPondInfoModel().obs;
 
-  List<FarmModel> selectedFarms = [];
-  List<PondModel> selectedPonds = [];
+  RxList<FarmModel> selectedFarms = <FarmModel>[].obs;
+  RxList<PondModel> selectedPonds = <PondModel>[].obs;
 
   final WaterQualityController controller =
       Get.isRegistered<WaterQualityController>()
@@ -144,20 +144,38 @@ class _ValueParameterState extends State<ValueParameter> {
                   Expanded(
                     child: TypeAheadField<FarmModel>(
                       controller: _farmController,
-                      builder: (context, controller, focusNode) {
-                        return MyTextField(
-                          controller: controller,
-                          hintText: selectedFarms.isEmpty
-                              ? "Select Farm"
-                              : selectedFarms
-                                  .map((e) => "${e.name} (${e.farmId})")
-                                  .join(', '),
-                          focusNode: focusNode,
-                          labelText: "FARMS",
+                      decorationBuilder: (context, child) {
+                        return Material(
+                          type: MaterialType.card,
+                          elevation: 4,
+                          borderRadius: BorderRadius.circular(8),
+                          child: child,
                         );
                       },
+                      offset: const Offset(0, 12),
+                      constraints: const BoxConstraints(maxHeight: 500),
+                      builder: (context, controller, focusNode) {
+                        return Obx(() {
+                          return MyTextField(
+                            controller: controller,
+                            hintText: selectedFarms.isEmpty
+                                ? "Select Farm"
+                                : selectedFarms
+                                    .map((e) => "${e.name} (${e.farmId})")
+                                    .join(', '),
+                            focusNode: focusNode,
+                            labelText: "FARMS",
+                          );
+                        });
+                      },
                       onSelected: (value) {
-                        print(value);
+                        // if select then remove the selected ponds
+                        if (selectedFarms.contains(value)) {
+                          selectedFarms.remove(value);
+                        } else {
+                          selectedFarms.add(value);
+                        }
+                        setState(() {});
                       },
                       suggestionsCallback: (search) {
                         return farmerPondInfo.value.farms!
@@ -170,22 +188,24 @@ class _ValueParameterState extends State<ValueParameter> {
                       itemBuilder: (context, suggestion) {
                         return Container(
                           decoration: const BoxDecoration(color: Colors.white),
-                          child: CheckboxListTile(
-                            title: Text(
-                                "${suggestion.name} (${suggestion.farmId})"),
-                            value: selectedFarms.contains(suggestion),
-                            onChanged: (bool? selected) {
-                              setState(() {
-                                if (selected == true &&
-                                    !selectedFarms.contains(suggestion)) {
-                                  selectedFarms.add(suggestion);
-                                } else if (selected == false &&
-                                    selectedFarms.contains(suggestion)) {
-                                  selectedFarms.remove(suggestion);
-                                }
-                                _farmController.clear();
-                              });
-                            },
+                          child: IgnorePointer(
+                            child: CheckboxListTile(
+                              title: Text(
+                                  "${suggestion.name} (${suggestion.farmId})"),
+                              value: selectedFarms.contains(suggestion),
+                              onChanged: (bool? selected) {
+                                // setState(() {
+                                //   if (selected == true &&
+                                //       !selectedFarms.contains(suggestion)) {
+                                //     selectedFarms.add(suggestion);
+                                //   } else if (selected == false &&
+                                //       selectedFarms.contains(suggestion)) {
+                                //     selectedFarms.remove(suggestion);
+                                //   }
+                                //   _farmController.clear();
+                                // });
+                              },
+                            ),
                           ),
                         );
                       },
