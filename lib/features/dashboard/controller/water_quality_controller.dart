@@ -1,7 +1,7 @@
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:get/get.dart';
-
 import '../../../model/farmer_pond_info_model.dart';
+import '../../../model/value_parameter_model.dart';
 import '../../../model/waterquality/water_qualiity_chart_model.dart';
 import '../api/water_quality_service.dart';
 
@@ -10,6 +10,13 @@ class WaterQualityController extends GetxController {
   RxList<WaterQualityChartModel> waterQualityChartModel =
       <WaterQualityChartModel>[].obs;
   FarmerPondInfoModel farmerPondInfoModel = FarmerPondInfoModel();
+
+  ValueParameterModel valueParameterModel = ValueParameterModel(
+    ponds:[],
+    farms: [],
+    sensor: '',
+  
+  );
 
   Future<FarmerPondInfoModel?> getfarmerpondinfo() async {
     try {

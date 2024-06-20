@@ -14,14 +14,17 @@ class _WaterQualityScreenState extends State<WaterQualityScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ValueParameter(),
-            SizedBox(
-              height: 20,
-            ),
-            LineChart(),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6),
+          child: Column(
+            children: [
+              ValueParameter(),
+              SizedBox(
+                height: 20,
+              ),
+              LineChart(),
+            ],
+          ),
         ),
       ),
     );

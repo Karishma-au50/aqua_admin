@@ -1,6 +1,8 @@
 import 'package:admin/features/dashboard/controller/water_quality_controller.dart';
+import 'package:admin/model/value_parameter_model.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +16,8 @@ import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
 
 class ValueParameter extends StatefulWidget {
-  const ValueParameter({super.key});
+  final VoidCallback? callback;
+  const ValueParameter({super.key, this.callback});
 
   @override
   State<ValueParameter> createState() => _ValueParameterState();
@@ -68,14 +71,28 @@ class _ValueParameterState extends State<ValueParameter> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
       builder: (BuildContext context, Widget? child) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: child,
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: greenColor,
+              secondary: Colors.grey,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                // height: MediaQuery.of(context).size.height * 0.6,
+                // width: MediaQuery.of(context).size.width * 0.7,
+                constraints: BoxConstraints(maxWidth: 500, maxHeight: 570),
+                child: child,
+              ),
             ),
           ),
         );
@@ -153,7 +170,7 @@ class _ValueParameterState extends State<ValueParameter> {
                         );
                       },
                       offset: const Offset(0, 12),
-                      constraints: const BoxConstraints(maxHeight: 500),
+                      constraints: const BoxConstraints(maxHeight: 300),
                       builder: (context, controller, focusNode) {
                         return Obx(() {
                           return MyTextField(
@@ -182,7 +199,6 @@ class _ValueParameterState extends State<ValueParameter> {
                             .where((ele) =>
                                 ele.name.contains(search) ||
                                 ele.farmId.toString().contains(search))
-                            // .map((e) => "${e.name} (${e.farmId})")
                             .toList();
                       },
                       itemBuilder: (context, suggestion) {
@@ -217,6 +233,7 @@ class _ValueParameterState extends State<ValueParameter> {
                   Expanded(
                     child: TypeAheadField<PondModel>(
                       controller: _pondController,
+                      constraints: const BoxConstraints(maxHeight: 300),
                       builder: (context, controller, focusNode) {
                         return MyTextField(
                           controller: controller,
@@ -232,15 +249,17 @@ class _ValueParameterState extends State<ValueParameter> {
                       onSelected: (value) {},
                       suggestionsCallback: (search) {
                         return farmerPondInfo.value.ponds!
-                            .where((ele) =>
-                                ele.name!
-                                    .toLowerCase()
-                                    .contains(search.toLowerCase()) ||
-                                ele.pondId
-                                    .toString()
-                                    .toLowerCase()
-                                    .contains(search.toLowerCase()))
-                            // .map((e) => "${e.name} (${e.pondId})")
+                            .where((ele) => (ele.name!
+                                        .toLowerCase()
+                                        .contains(search.toLowerCase()) ||
+                                    ele.pondId
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(search.toLowerCase()))
+                                //          &&
+                                // selectedFarms.any(
+                                //     (element) => element.farmId == ele.farmId)
+                                )
                             .toList();
                       },
                       itemBuilder: (context, suggestion) {
@@ -303,7 +322,7 @@ class _ValueParameterState extends State<ValueParameter> {
                   Expanded(
                     child: Wrap(
                       children: List.generate(
-                        options.length,
+                        selectedPonds.length > 1 ? 7 : options.length,
                         (index) => SizedBox(
                           width: 120,
                           child: Row(
@@ -380,33 +399,53 @@ class _ValueParameterState extends State<ValueParameter> {
             const SizedBox(
               height: 10,
             ),
-            MyButton(
-                text: "Submit",
-                onPressed: () async {
-                  // if (_formKey.currentState!.validate()) {
-                  if (selectedFarms.isEmpty) {
-                    MyToasts.toastError("Please select farm");
-                    return;
-                  }
-                  if (selectedPonds.isEmpty) {
-                    MyToasts.toastError("Please select pond");
-                    return;
-                  }
-                  if (selectedDateRange == null) {
-                    MyToasts.toastError("Please select date range");
-                    return;
-                  }
+            Align(
+              alignment: AlignmentDirectional.topEnd,
+              child: MyButton(
+                  width: context.width * 0.2,
+                  text: "Submit",
+                  borderRadius: BorderRadius.circular(5),
+                  disabled: selectedFarms.isEmpty ||
+                      selectedPonds.isEmpty ||
+                      selectedDateRange == null,
+                  borderColor: selectedFarms.isEmpty ||
+                          selectedPonds.isEmpty ||
+                          selectedDateRange == null
+                      ? Colors.grey
+                      : greenColor,
+                  onPressed: () async {
+                    // if (_formKey.currentState!.validate()) {
+                    if (selectedFarms.isEmpty) {
+                      MyToasts.toastError("Please select farm");
+                      return;
+                    }
+                    if (selectedPonds.isEmpty) {
+                      MyToasts.toastError("Please select pond");
+                      return;
+                    }
+                    if (selectedDateRange == null) {
+                      MyToasts.toastError("Please select date range");
+                      return;
+                    }
 
-                  final startDate = selectedDateRange!.start;
-                  final endDate = selectedDateRange!.end;
-                  final farmIds = selectedFarms.map((e) => e.farmId!).toList();
-                  final pondIds = selectedPonds.map((e) => e.pondId!).toList();
+                    final startDate = selectedDateRange!.start;
+                    final endDate = selectedDateRange!.end;
+                    final farmIds =
+                        selectedFarms.map((e) => e.farmId!).toList();
+                    final pondIds =
+                        selectedPonds.map((e) => e.pondId!).toList();
+                    controller.valueParameterModel = ValueParameterModel(
+                      ponds: selectedPonds,
+                      farms: selectedFarms,
+                      sensor: parameterValue,
+                      startDate: startDate,
+                      endDate: endDate,
+                    );
 
-                  await controller.getWaterQualityChartData(
-                      pondIds, [parameterValue], startDate, endDate);
-                }
-                // },
-                )
+                    await controller.getWaterQualityChartData(
+                        pondIds, [parameterValue], startDate, endDate);
+                  }),
+            )
           ],
         ),
       ),

@@ -3,17 +3,20 @@ import 'dart:html';
 import 'dart:ui' as ui;
 
 import 'package:admin/model/waterquality/water_qualiity_chart_model.dart';
+import 'package:admin/shared/constant/global_variables.dart';
 import 'package:admin/shared/widgets/buttons/my_button.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+import '../../../../model/farm_model.dart';
+import '../../../../model/pond_model.dart';
 import '../../../../shared/constant/font_helper.dart';
 import '../../controller/water_quality_controller.dart';
 
@@ -66,72 +69,84 @@ class _LineChartState extends State<LineChart> {
             }),
           ),
         ),
-        Container(
-            padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F5F7),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  '5 mins',
-                  '10 mins',
-                  '15 mins',
-                  '30 mins',
-                  '45 mins',
-                  '60 mins'
-                ].map((item) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+        Obx(() {
+          if (controller.waterQualityChartModel.isNotEmpty) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F5F7),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    '5 mins',
+                    '10 mins',
+                    '15 mins',
+                    '30 mins',
+                    '45 mins',
+                    '60 mins'
+                  ].map((item) {
+                    bool isSelected = item == selectedFrequency;
+                    return AnimatedContainer(
+                      duration: Duration(seconds: 500),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6.0, vertical: 6),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                          backgroundColor:
+                              isSelected ? greenColor : Colors.white,
                         ),
-                        padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                        backgroundColor: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          selectedFrequency = item;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          item,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff767B84),
-                            shadows: [
-                              Shadow(
-                                color: Color(0xFFD6D6D6),
-                                offset: Offset(0, 3),
-                                blurRadius: 4,
-                              ),
-                            ],
+                        onPressed: () {
+                          setState(() {
+                            selectedFrequency = item;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xff767B84),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
-            )),
-        Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: MyButton(
-              width: 100,
-              textStyle: GlobalFonts.ts14px600w,
-              text: "EXPORT PDF",
-              onPressed: _renderPdf,
-            ),
-          ),
-        ),
+            );
+          } else {
+            return const SizedBox();
+          }
+        }),
+        Obx(() {
+          if (controller.waterQualityChartModel.isNotEmpty) {
+            return Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: MyButton(
+                  width: 100,
+                  textStyle: GlobalFonts.ts14px600w,
+                  text: "EXPORT PDF",
+                  onPressed: _renderPdf,
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox();
+          }
+        }),
       ],
     );
   }
@@ -147,17 +162,11 @@ class _LineChartState extends State<LineChart> {
     ];
 
     // Filter data based on selected frequency
-    // List<SensorChartModel> filteredData = ;
 
     return controller.waterQualityChartModel
         .map(
           (element) => LineSeries<SensorChartModel, DateTime>(
             dataSource: _filterDataByFrequency(element.data),
-//             .where(
-//                      (element) => element.value != 0 && element.derivedTime != 0),
-// //
-            //     (data) => data.sensor == element.sensor && data.pondId == element.pondId)
-            // .toList(),
             xValueMapper: (data, _) => data.dateTime,
             yValueMapper: (data, _) => data.value,
             markerSettings: const MarkerSettings(isVisible: false),
@@ -207,156 +216,16 @@ class _LineChartState extends State<LineChart> {
         .toList();
     return d;
   }
-// }
-
-// class _LineChartState extends State<LineChart> {
-//   final WaterQualityController controller = Get.find();
-//   final GlobalKey<SfCartesianChartState> _chartKey = GlobalKey();
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-//           child: SizedBox(
-//             height: 300,
-//             child: Obx(() {
-//               if (controller.waterQualityChartModel.isEmpty) {
-//                 return const Center(
-//                   child: Text("No Data Found"),
-//                   // child: CircularProgressIndicator(),
-//                 );
-//               }
-//               return SfCartesianChart(
-//                 key: _chartKey,
-//                 primaryXAxis: DateTimeAxis(
-//                   majorGridLines: const MajorGridLines(width: 0),
-//                   edgeLabelPlacement: EdgeLabelPlacement.shift,
-//                   intervalType: DateTimeIntervalType.auto,
-//                   dateFormat: DateFormat.yMd(),
-//                   // labelIntersectAction: AxisLabelIntersectAction.rotate45,
-//                 ),
-//                 tooltipBehavior: TooltipBehavior(enable: true),
-//                 series: _buildLineSeries(),
-//                 trackballBehavior: TrackballBehavior(
-//                   enable: true,
-//                   activationMode: ActivationMode.none,
-//                   tooltipSettings: const InteractiveTooltip(
-//                     enable: true,
-//                     color: Colors.black,
-//                     textStyle: TextStyle(color: Colors.white),
-//                   ),
-//                 ),
-//               );
-//             }),
-//           ),
-//         ),
-//         Container(
-//             padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
-//             decoration: BoxDecoration(
-//               color: const Color(0xFFF3F5F7),
-//               borderRadius: BorderRadius.circular(10.0),
-//             ),
-//             child: SingleChildScrollView(
-//               scrollDirection: Axis.horizontal,
-//               child: Row(
-//                 children: [
-//                   '5 mins',
-//                   '10 mins',
-//                   '15 mins',
-//                   '30 mins',
-//                   '45 mins',
-//                   '60 mins'
-//                 ].map((item) {
-//                   return Padding(
-//                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
-//                     child: TextButton(
-//                       style: TextButton.styleFrom(
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(10.0),
-//                         ),
-//                         padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-//                         backgroundColor: Colors.white,
-//                       ),
-//                       onPressed: () {},
-//                       child: Padding(
-//                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//                         child: Text(
-//                           item,
-//                           style: const TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             color: Color(0xff767B84),
-//                             shadows: [
-//                               Shadow(
-//                                 color: Color(0xFFD6D6D6),
-//                                 offset: Offset(0, 3),
-//                                 blurRadius: 4,
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   );
-//                 }).toList(),
-//               ),
-//             )),
-//         Align(
-//           alignment: Alignment.topRight,
-//           child: Padding(
-//             padding: const EdgeInsets.all(12.0),
-//             child: MyButton(
-//               width: 100,
-//               textStyle: GlobalFonts.ts14px600w,
-//               text: "EXPORT PDF",
-//               onPressed: _renderPdf,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-
-//   List<LineSeries<SensorChartModel, DateTime>> _buildLineSeries() {
-//     List<Color> colors = [
-//       Colors.orange,
-//       Colors.green,
-//       Colors.blue,
-//       Colors.red,
-//       Colors.purple,
-//       Colors.cyan
-//     ];
-
-//     return controller.waterQualityChartModel
-//         .map(
-//           (element) => LineSeries<SensorChartModel, DateTime>(
-//             dataSource: element.data
-//                 .where(
-//                     (element) => element.value != 0 && element.derivedTime != 0)
-//                 .toList(),
-//             xValueMapper: (data, _) => data.dateTime,
-//             yValueMapper: (data, _) => data.value,
-//             markerSettings: const MarkerSettings(isVisible: false),
-//             color: colors[controller.waterQualityChartModel.indexOf(element) %
-//                 colors.length],
-//             name: "${element.sensor} (${element.pondId})",
-//             emptyPointSettings: const EmptyPointSettings(
-//               mode: EmptyPointMode.gap,
-//               color: Colors.transparent,
-//               borderColor: Colors.transparent,
-//             ),
-//           ),
-//         )
-//         .toList();
-//   }
 
   Future<void> _renderPdf() async {
     try {
+      final value = controller.valueParameterModel;
       // Capture chart image
-      final ui.Image? chartImage =
-          await _chartKey.currentState!.toImage(pixelRatio: 3.0);
+      final RenderRepaintBoundary boundary =
+          _chartKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final ui.Image chartImage = await boundary.toImage(pixelRatio: 3.0);
       final ByteData? chartBytes =
-          await chartImage?.toByteData(format: ui.ImageByteFormat.png);
+          await chartImage.toByteData(format: ui.ImageByteFormat.png);
       final Uint8List chartImageBytes = chartBytes!.buffer
           .asUint8List(chartBytes.offsetInBytes, chartBytes.lengthInBytes);
       final PdfBitmap chartBitmap = PdfBitmap(chartImageBytes);
@@ -375,16 +244,68 @@ class _LineChartState extends State<LineChart> {
       // Set the size of the page to fit the content
       document.pageSettings.size = Size(pageSize.width, pageSize.height + 400);
 
-      // Draw chart heading at the top-center
-      const String chartHeading = 'Water Quality Parameters Report';
-      page.graphics.drawString(
-          chartHeading, PdfStandardFont(PdfFontFamily.helvetica, 20),
-          bounds: Rect.fromLTWH(0, 10, pageSize.width, 30),
-          format: PdfStringFormat(
-              alignment: PdfTextAlignment.center,
-              lineAlignment: PdfVerticalAlignment.middle));
+      // Draw company logo at the top-left
+      const double logoWidth = 85;
+      const double logoHeight = 45;
+      page.graphics.drawImage(
+        logoBitmap,
+        const Rect.fromLTWH(10, 12, logoWidth, logoHeight),
+      );
 
-      // Draw table with dummy data
+      // Draw chart heading at the top-center
+      String chartHeading = 'Water Quality Parameters Report';
+      page.graphics.drawString(
+        chartHeading,
+        PdfStandardFont(PdfFontFamily.helvetica, 20),
+        bounds: Rect.fromLTWH(0, 13, pageSize.width, 30),
+        format: PdfStringFormat(
+          alignment: PdfTextAlignment.center,
+          lineAlignment: PdfVerticalAlignment.middle,
+        ),
+      );
+
+      // Draw start and end date below the chart heading
+      String dateRange =
+          'Date Range: ${value.startDate?.toLocal().toString().split(' ')[0]} to ${value.endDate?.toLocal().toString().split(' ')[0]}';
+      String downloadTime =
+          'Reported On: ${DateFormat('yyyy-MM-dd,HH:mm:ss').format(DateTime.now().toLocal())}'; // Format for date and time
+
+      String sensorName = 'Sensor: ${value.sensor ?? 'N/A'}';
+      page.graphics.drawString(
+        dateRange,
+        PdfStandardFont(PdfFontFamily.helvetica, 12,
+            style: PdfFontStyle.regular),
+        bounds: Rect.fromLTWH(0, 50, pageSize.width, 20),
+        format: PdfStringFormat(
+          alignment: PdfTextAlignment.center,
+          lineAlignment: PdfVerticalAlignment.middle,
+        ),
+      );
+
+      page.graphics.drawString(
+        downloadTime,
+        PdfStandardFont(PdfFontFamily.helvetica, 12,
+            style: PdfFontStyle.regular),
+        bounds: Rect.fromLTWH(0, 70, pageSize.width, 20),
+        format: PdfStringFormat(
+          alignment: PdfTextAlignment.center,
+          lineAlignment: PdfVerticalAlignment.middle,
+        ),
+      );
+
+      // Draw sensor name below the date range
+      page.graphics.drawString(
+        sensorName,
+        PdfStandardFont(PdfFontFamily.helvetica, 12,
+            style: PdfFontStyle.regular),
+        bounds: Rect.fromLTWH(0, 90, pageSize.width, 20),
+        format: PdfStringFormat(
+          alignment: PdfTextAlignment.center,
+          lineAlignment: PdfVerticalAlignment.middle,
+        ),
+      );
+
+      // Draw table with actual data
       final PdfGrid grid = PdfGrid();
       grid.columns.add(count: 5);
       grid.headers.add(1);
@@ -399,16 +320,16 @@ class _LineChartState extends State<LineChart> {
 
       // Define header style with blue background and borders
       final PdfGridCellStyle headerStyle = PdfGridCellStyle(
-        backgroundBrush: PdfBrushes.gray,
+        backgroundBrush: PdfBrushes.gray, // Red background for header
         textBrush: PdfBrushes.white,
         font: PdfStandardFont(PdfFontFamily.helvetica, 12,
             style: PdfFontStyle.bold),
         cellPadding: PdfPaddings(left: 5, top: 5, right: 5, bottom: 5),
         borders: PdfBorders(
-          left: PdfPen(PdfColor(0, 0, 0)),
-          top: PdfPen(PdfColor(0, 0, 0)),
-          right: PdfPen(PdfColor(0, 0, 0)),
-          bottom: PdfPen(PdfColor(0, 0, 0)),
+          left: PdfPens.black,
+          top: PdfPens.black,
+          right: PdfPens.black,
+          bottom: PdfPens.black,
         ),
       );
 
@@ -417,21 +338,48 @@ class _LineChartState extends State<LineChart> {
         headerRow.cells[i].style = headerStyle;
       }
 
-      // Define row style with reduced font size and no background color
+      // Define row style with reduced font size
       final PdfGridCellStyle rowStyle = PdfGridCellStyle(
         textBrush: PdfBrushes.black,
-        font: PdfStandardFont(PdfFontFamily.helvetica, 10), // Reduced font size
+        font: PdfStandardFont(PdfFontFamily.helvetica, 10),
         cellPadding: PdfPaddings(left: 5, top: 5, right: 5, bottom: 5),
+        borders: PdfBorders(
+          left: PdfPens.black,
+          top: PdfPens.black,
+          right: PdfPens.black,
+          bottom: PdfPens.black,
+        ),
       );
 
-      // Add rows with dummy data
-      for (int i = 1; i <= 7; i++) {
+      // Define list of colors for row backgrounds
+      List<PdfColor> rowColors = [
+        PdfColor(255, 255, 0), // Yellow
+        PdfColor(0, 255, 0), // Green
+        PdfColor(0, 0, 255), // Blue
+        PdfColor(255, 0, 255), // Purple
+        PdfColor(0, 255, 255), // Cyan
+        PdfColor(255, 128, 0), // Orange
+      ];
+
+      // Add rows with actual data
+      for (int i = 0; i < (value.ponds ?? []).length; i++) {
+        PondModel pond = value.ponds![i];
+        FarmModel? farm = value.farms?.firstWhere(
+          (f) => f.farmId == pond.farmId,
+          orElse: () => FarmModel(name: ''),
+        );
+
         final PdfGridRow row = grid.rows.add();
-        row.cells[0].value = 'Pond ID $i';
-        row.cells[1].value = 'Farm ID $i';
-        row.cells[2].value = 'Pond Name $i';
-        row.cells[3].value = 'Farm Name $i';
-        row.cells[4].value = 'Owner Name $i';
+        row.cells[0].value = pond.pondId.toString();
+        row.cells[1].value = pond.farmId.toString();
+        row.cells[2].value = pond.name ?? 'N/A';
+        row.cells[3].value = farm?.name ?? 'N/A';
+        row.cells[4].value = farm?.ownerName ?? 'N/A';
+
+        // Set background color for each row
+        row.style = PdfGridCellStyle(
+          textBrush: PdfSolidBrush(rowColors[i % rowColors.length]),
+        );
 
         // Apply row style
         for (int j = 0; j < row.cells.count; j++) {
@@ -441,44 +389,39 @@ class _LineChartState extends State<LineChart> {
 
       // Draw the grid at the specified location on the page
       grid.draw(
-          page: page,
-          bounds: Rect.fromLTWH(0, 60, pageSize.width, pageSize.height - 60));
+        page: page,
+        bounds: Rect.fromLTWH(0, 150, pageSize.width, pageSize.height - 100),
+      );
 
       // Adjust the position and height of the chart
       const double chartTopMargin = 300; // Increased top margin
       const double chartHeight = 170; // Reduced height for the chart
-      page.graphics.drawImage(chartBitmap,
-          Rect.fromLTWH(0, chartTopMargin, pageSize.width, chartHeight));
+      page.graphics.drawImage(
+        chartBitmap,
+        Rect.fromLTWH(0, chartTopMargin, pageSize.width, chartHeight),
+      );
 
       // Add comments section below the chart
       const double commentsTopMargin = chartTopMargin + chartHeight + 20;
       const String comments = 'Comments: This is for testing purpose';
       page.graphics.drawString(
-          comments, PdfStandardFont(PdfFontFamily.helvetica, 12),
-          bounds: Rect.fromLTWH(0, commentsTopMargin, pageSize.width, 30),
-          format: PdfStringFormat(
-              alignment: PdfTextAlignment.left,
-              lineAlignment: PdfVerticalAlignment.top));
-
-      // Draw company logo at the bottom-right
-      const double logoWidth = 85;
-      const double logoHeight = 45;
-      const double logoBottomMargin = 10;
-      page.graphics.drawImage(
-          logoBitmap,
-          Rect.fromLTWH(
-              pageSize.width - logoWidth - 10,
-              pageSize.height + 290, // Adjusted position
-              logoWidth,
-              logoHeight));
+        comments,
+        PdfStandardFont(PdfFontFamily.helvetica, 12),
+        bounds: Rect.fromLTWH(0, commentsTopMargin, pageSize.width, 30),
+        format: PdfStringFormat(
+          alignment: PdfTextAlignment.left,
+          lineAlignment: PdfVerticalAlignment.top,
+        ),
+      );
 
       // Save PDF and initiate download
-      final List<int> bytesList = document.saveSync();
+      final List<int> bytesList = await document.save();
       document.dispose();
 
       AnchorElement(
-          href:
-              "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytesList)}")
+        href:
+            "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytesList)}",
+      )
         ..setAttribute("download", "output.pdf")
         ..click();
 
