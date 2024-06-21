@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+// import 'dart:html';
 import 'dart:ui' as ui;
 
 import 'package:admin/model/waterquality/water_qualiity_chart_model.dart';
@@ -418,12 +418,12 @@ class _LineChartState extends State<LineChart> {
       final List<int> bytesList = await document.save();
       document.dispose();
 
-      AnchorElement(
-        href:
-            "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytesList)}",
-      )
-        ..setAttribute("download", "output.pdf")
-        ..click();
+      // AnchorElement(
+      //   href:
+      //       "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytesList)}",
+      // )
+      //   ..setAttribute("download", "output.pdf")
+      //   ..click();
 
       MyToasts.toastSuccess("Chart has been exported as PDF document.");
     } catch (e) {

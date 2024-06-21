@@ -29,10 +29,12 @@ class _ValueParameterState extends State<ValueParameter> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _frequencyController = TextEditingController();
-  Rx<FarmerPondInfoModel> farmerPondInfo = FarmerPondInfoModel().obs;
+  FarmerPondInfoModel farmerPondInfo = FarmerPondInfoModel();
 
-  RxList<FarmModel> selectedFarms = <FarmModel>[].obs;
-  RxList<PondModel> selectedPonds = <PondModel>[].obs;
+  List<FarmModel> selectedFarms = <FarmModel>[].obs;
+  List<PondModel> selectedPonds = <PondModel>[].obs;
+
+  RxList<PondModel> filteredPonds = <PondModel>[].obs;
 
   final WaterQualityController controller =
       Get.isRegistered<WaterQualityController>()
@@ -63,6 +65,8 @@ class _ValueParameterState extends State<ValueParameter> {
   ];
   final TextEditingController _pondController = TextEditingController();
   final TextEditingController _farmController = TextEditingController();
+  final SuggestionsController<PondModel> _pondSuggestionsController =
+      SuggestionsController<PondModel>();
 
   DateTimeRange? selectedDateRange;
   Future<void> _selectDateRange(BuildContext context) async {
@@ -90,7 +94,8 @@ class _ValueParameterState extends State<ValueParameter> {
                 ),
                 // height: MediaQuery.of(context).size.height * 0.6,
                 // width: MediaQuery.of(context).size.width * 0.7,
-                constraints: BoxConstraints(maxWidth: 500, maxHeight: 570),
+                constraints:
+                    const BoxConstraints(maxWidth: 500, maxHeight: 570),
                 child: child,
               ),
             ),
@@ -110,7 +115,7 @@ class _ValueParameterState extends State<ValueParameter> {
   void initState() {
     controller.getfarmerpondinfo().then((value) {
       if (value != null) {
-        farmerPondInfo(value);
+        farmerPondInfo = value;
       }
     });
 
@@ -185,17 +190,9 @@ class _ValueParameterState extends State<ValueParameter> {
                           );
                         });
                       },
-                      onSelected: (value) {
-                        // if select then remove the selected ponds
-                        if (selectedFarms.contains(value)) {
-                          selectedFarms.remove(value);
-                        } else {
-                          selectedFarms.add(value);
-                        }
-                        setState(() {});
-                      },
+                      onSelected: (value) {},
                       suggestionsCallback: (search) {
-                        return farmerPondInfo.value.farms!
+                        return farmerPondInfo.farms!
                             .where((ele) =>
                                 ele.name.contains(search) ||
                                 ele.farmId.toString().contains(search))
@@ -204,24 +201,30 @@ class _ValueParameterState extends State<ValueParameter> {
                       itemBuilder: (context, suggestion) {
                         return Container(
                           decoration: const BoxDecoration(color: Colors.white),
-                          child: IgnorePointer(
-                            child: CheckboxListTile(
-                              title: Text(
-                                  "${suggestion.name} (${suggestion.farmId})"),
-                              value: selectedFarms.contains(suggestion),
-                              onChanged: (bool? selected) {
-                                // setState(() {
-                                //   if (selected == true &&
-                                //       !selectedFarms.contains(suggestion)) {
-                                //     selectedFarms.add(suggestion);
-                                //   } else if (selected == false &&
-                                //       selectedFarms.contains(suggestion)) {
-                                //     selectedFarms.remove(suggestion);
-                                //   }
-                                //   _farmController.clear();
-                                // });
-                              },
-                            ),
+                          child: CheckboxListTile(
+                            title: Text(
+                                "${suggestion.name} (${suggestion.farmId})"),
+                            value: selectedFarms.contains(suggestion),
+                            onChanged: (bool? selected) {
+                              setState(() {
+                                if (selected == true &&
+                                    !selectedFarms.contains(suggestion)) {
+                                  selectedFarms.add(suggestion);
+                                } else if (selected == false &&
+                                    selectedFarms.contains(suggestion)) {
+                                  selectedFarms.remove(suggestion);
+                                }
+                                filteredPonds.clear();
+                                filteredPonds.value = farmerPondInfo.ponds!
+                                    .where((element) => selectedFarms
+                                        .map((e) => e.farmId)
+                                        .contains(element.farmId))
+                                    .toList();
+                                _pondSuggestionsController.suggestions =
+                                    filteredPonds;
+                                _farmController.clear();
+                              });
+                            },
                           ),
                         );
                       },
@@ -231,60 +234,66 @@ class _ValueParameterState extends State<ValueParameter> {
                     width: 20,
                   ),
                   Expanded(
-                    child: TypeAheadField<PondModel>(
-                      controller: _pondController,
-                      constraints: const BoxConstraints(maxHeight: 300),
-                      builder: (context, controller, focusNode) {
-                        return MyTextField(
-                          controller: controller,
-                          hintText: selectedPonds.isEmpty
-                              ? "Select Pond"
-                              : selectedPonds
-                                  .map((e) => "${e.name} (${e.pondId})")
-                                  .join(', '),
-                          focusNode: focusNode,
-                          labelText: "PONDS",
-                        );
-                      },
-                      onSelected: (value) {},
-                      suggestionsCallback: (search) {
-                        return farmerPondInfo.value.ponds!
-                            .where((ele) => (ele.name!
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase()) ||
-                                    ele.pondId
-                                        .toString()
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase()))
-                                //          &&
-                                // selectedFarms.any(
-                                //     (element) => element.farmId == ele.farmId)
-                                )
-                            .toList();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return Container(
-                          decoration: const BoxDecoration(color: Colors.white),
-                          child: CheckboxListTile(
-                            title: Text(
-                                "${suggestion.name} (${suggestion.pondId})"),
-                            value: selectedPonds.contains(suggestion),
-                            onChanged: (bool? selected) {
-                              setState(() {
-                                if (selected == true &&
-                                    !selectedPonds.contains(suggestion)) {
-                                  selectedPonds.add(suggestion);
-                                } else if (selected == false &&
-                                    selectedPonds.contains(suggestion)) {
-                                  selectedPonds.remove(suggestion);
-                                }
-                                _pondController.clear();
-                              });
-                            },
-                          ),
-                        );
-                      },
-                    ),
+                    child: Obx(() {
+                      if (filteredPonds.isEmpty) {
+                        return const SizedBox();
+                      }
+                      return TypeAheadField<PondModel>(
+                        controller: _pondController,
+                        suggestionsController: _pondSuggestionsController,
+                        constraints: const BoxConstraints(maxHeight: 300),
+                        builder: (context, controller, focusNode) {
+                          return MyTextField(
+                            controller: controller,
+                            hintText: selectedPonds.isEmpty
+                                ? "Select Pond"
+                                : selectedPonds
+                                    .map((e) => "${e.name} (${e.pondId})")
+                                    .join(', '),
+                            focusNode: focusNode,
+                            labelText: "PONDS",
+                          );
+                        },
+                        onSelected: (value) {},
+                        suggestionsCallback: (search) {
+                          return filteredPonds
+                              .where((ele) =>
+                                  (ele.name!
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase()) ||
+                                      ele.pondId
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains(search.toLowerCase())) &&
+                                  selectedFarms.any((element) =>
+                                      element.farmId == ele.farmId))
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return Container(
+                            decoration:
+                                const BoxDecoration(color: Colors.white),
+                            child: CheckboxListTile(
+                              title: Text(
+                                  "${suggestion.name} (${suggestion.pondId})"),
+                              value: selectedPonds.contains(suggestion),
+                              onChanged: (bool? selected) {
+                                setState(() {
+                                  if (selected == true &&
+                                      !selectedPonds.contains(suggestion)) {
+                                    selectedPonds.add(suggestion);
+                                  } else if (selected == false &&
+                                      selectedPonds.contains(suggestion)) {
+                                    selectedPonds.remove(suggestion);
+                                  }
+                                  _pondController.clear();
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    }),
                   ),
                 ],
               ),

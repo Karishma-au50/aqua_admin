@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   final viewKey = GlobalKey(debugLabel: 'Navigation View Key');
   late final List<NavigationPaneItem> originalItems = [
     PaneItem(
-      key: const ValueKey('/home'),
+      key: const ValueKey(AppRoutes.dashboard),
       icon: const Icon(FluentIcons.home),
       title: const Text('Home'),
       body: const SizedBox.shrink(),
