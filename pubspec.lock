@@ -138,10 +138,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_acrylic
-      sha256: a9a1fdf91ff1fb47858fd82507f57e255a132a5d355056694fdb9fd303633b18
+      sha256: b3996dbde5abf5823cc9ead4cf2e5267c3181f15585fe47ce4dc4472e7ec827a
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.3"
+    version: "1.1.4"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -241,10 +241,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: abec47eb8c8c36ebf41d0a4c64dbbe7f956e39a012b3aafc530e951bdc12fe3f
+      sha256: cdae1b9c8bd7efadcef6112e81c903662ef2ce105cbd220a04bbb7c3425b5554
       url: "https://pub.dev"
     source: hosted
-    version: "14.1.4"
+    version: "14.2.0"
   http:
     dependency: transitive
     description:

@@ -1,13 +1,16 @@
+import 'package:admin/routes/app_pages.dart';
 import 'package:admin/routes/app_routes.dart';
 import 'package:admin/shared/utils/nav_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/constant/font_helper.dart';
 import '../../../../shared/constant/global_variables.dart';
 import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
 import '../../controller/sensor_controller.dart';
+import '../sensorCaliberation/sensor_caliberation_screen.dart';
 
 class DashBoardScreen extends StatelessWidget {
   const DashBoardScreen({
@@ -137,7 +140,8 @@ class SenserCaliberationDialoge extends StatefulWidget {
 
 class _SenserCaliberationDialogeState extends State<SenserCaliberationDialoge> {
   TextEditingController deviceID = TextEditingController();
-  final SensorController controller = Get.put(SensorController());
+  final SensorController controller =
+      Get.isRegistered() ? Get.find() : Get.put(SensorController());
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -173,9 +177,15 @@ class _SenserCaliberationDialogeState extends State<SenserCaliberationDialoge> {
                       color: greenColor,
                       text: 'SUBMIT',
                       onPressed: () async {
-                        Get.back();
-                        Get.toNamed(AppRoutes.sensorCaliberation,
-                            parameters: {"pondId": deviceID.text});
+                        // Get.back();
+                        context.pop();
+                        // Get.toNamed(AppRoutes.sensorCaliberation,
+                        //     parameters: {"pondId": deviceID.text});
+
+                        context.go(
+                          '${AppRoutes.sensorCaliberation}/${deviceID.text}',
+                          // pathParameters: {'pondId': deviceID.text},
+                        );
                       }),
                 ),
               ],
@@ -232,7 +242,8 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
                       color: greenColor,
                       text: 'SUBMIT',
                       onPressed: () async {
-                        Get.back();
+                        // Get.back();
+                        context.pop();
                         await controller.cleanInventory(deviceID.text);
                       }),
                 ),

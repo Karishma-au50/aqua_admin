@@ -91,7 +91,7 @@ class _LineChartState extends State<LineChart> {
                   ].map((item) {
                     bool isSelected = item == selectedFrequency;
                     return AnimatedContainer(
-                      duration: Duration(seconds: 500),
+                      duration: const Duration(seconds: 500),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6.0, vertical: 6),
                       child: TextButton(
@@ -428,7 +428,8 @@ class _LineChartState extends State<LineChart> {
 
       MyToasts.toastSuccess("Chart has been exported as PDF document.");
     } catch (e) {
-      print("error----$e");
+      // print("error----$e");
+      MyToasts.toastError("Error exporting chart as PDF document.");
     }
   }
 }

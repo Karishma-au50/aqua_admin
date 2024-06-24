@@ -44,7 +44,7 @@ class WaterQualityService extends BaseApiService {
     );
 
     if (response.data['error'] == true) {
-      print('errr-----${response.data}');
+      // print('errr-----${response.data}');
       return ResponseModel<List<WaterQualityChartModel>>(
         message: response.data['message'],
         error: response.data['error'],

@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../features/auth/controller/auth_controller.dart';
 import '../constant/font_helper.dart';
-import '../constant/global_variables.dart';
 import 'auth_base_view.dart';
 import 'buttons/my_button.dart';
 
@@ -28,7 +27,6 @@ class TermsAndCondition extends GetView<AuthController> {
                 Center(
                   child: SvgPicture.asset(
                     "assets/logo.svg",
-                    color: greenColor,
                     height: context.height * .12,
                   ),
                 ),

@@ -16,7 +16,7 @@ class MyButton extends StatefulWidget {
   final TextStyle? textStyle;
   final Widget? leadingIcon;
   const MyButton({
-    Key? key,
+    super.key,
     required this.text,
     this.textColor = Colors.white,
     this.width = double.infinity,
@@ -29,7 +29,7 @@ class MyButton extends StatefulWidget {
     this.disabled = false,
     this.textStyle,
     this.leadingIcon,
-  }) : super(key: key);
+  });
 
   @override
   State<MyButton> createState() => _MyButtonState();

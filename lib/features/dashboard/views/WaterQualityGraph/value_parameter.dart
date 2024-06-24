@@ -2,7 +2,6 @@ import 'package:admin/features/dashboard/controller/water_quality_controller.dar
 import 'package:admin/model/value_parameter_model.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -50,9 +49,9 @@ class _ValueParameterState extends State<ValueParameter> {
     "TAN",
     "NO2",
     "NO3",
-    "PH & DO",
-    "PH & NH3",
-    "NH4 & NH3"
+    // "PH & DO",
+    // "PH & NH3",
+    // "NH4 & NH3"
   ];
 
   List<String> frequency = [
@@ -478,12 +477,10 @@ class _ValueParameterState extends State<ValueParameter> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 3,
-                      offset:
-                          const Offset(0, 0.5), 
+                      offset: const Offset(0, 0.5),
                     ),
                   ],
-                  borderRadius: BorderRadius.circular(
-                      10),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: isMobile
                     ? Column(
@@ -714,8 +711,8 @@ class _ValueParameterState extends State<ValueParameter> {
 
                       final startDate = selectedDateRange!.start;
                       final endDate = selectedDateRange!.end;
-                      final farmIds =
-                          selectedFarms.map((e) => e.farmId!).toList();
+                      // final farmIds =
+                      //     selectedFarms.map((e) => e.farmId!).toList();
                       final pondIds =
                           selectedPonds.map((e) => e.pondId!).toList();
                       controller.valueParameterModel = ValueParameterModel(

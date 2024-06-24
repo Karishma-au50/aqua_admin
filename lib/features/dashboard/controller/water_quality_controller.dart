@@ -12,10 +12,9 @@ class WaterQualityController extends GetxController {
   FarmerPondInfoModel farmerPondInfoModel = FarmerPondInfoModel();
 
   ValueParameterModel valueParameterModel = ValueParameterModel(
-    ponds:[],
+    ponds: [],
     farms: [],
     sensor: '',
-  
   );
 
   Future<FarmerPondInfoModel?> getfarmerpondinfo() async {
@@ -44,7 +43,7 @@ class WaterQualityController extends GetxController {
         MyToasts.toastError(res.message ?? "Error");
       }
     } catch (e) {
-      print(e);
+      // print(e);
       MyToasts.toastError(e.toString());
     }
   }

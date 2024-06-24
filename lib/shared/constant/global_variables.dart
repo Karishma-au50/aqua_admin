@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_utils/src/platform/platform.dart';
 
 const Color greenColor = Color.fromRGBO(22, 99, 81, 1);
 const Color blackColor = Color(0xFF0E0F0C);

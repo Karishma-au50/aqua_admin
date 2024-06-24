@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../constant/font_helper.dart';
 import '../../constant/global_variables.dart';
 
 class DropdownFormFieldByModel<T> extends StatefulWidget {
   const DropdownFormFieldByModel({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.dropDownItems,
     this.labelText,
@@ -16,7 +15,7 @@ class DropdownFormFieldByModel<T> extends StatefulWidget {
     this.value,
     this.validator,
     this.onChange,
-  }) : super(key: key);
+  });
 
   final String hintText;
   final String? labelText;

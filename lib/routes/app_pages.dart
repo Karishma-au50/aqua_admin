@@ -1,6 +1,5 @@
 import 'package:admin/features/dashboard/views/WaterQualityGraph/water_quality_screen.dart';
 import 'package:admin/features/dashboard/views/sensorCaliberation/sensor_caliberation_screen.dart';
-import 'package:admin/model/conclusive_Raw_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +11,7 @@ import '../main_screen.dart';
 import 'app_routes.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
+final shellNavigatorKey = GlobalKey<NavigatorState>();
 final router = GoRouter(
   navigatorKey: rootNavigatorKey,
   initialLocation: AppRoutes.login,
@@ -23,10 +22,10 @@ final router = GoRouter(
           MaterialPage(key: state.pageKey, child: const LoginScreen()),
     ),
     ShellRoute(
-      navigatorKey: _shellNavigatorKey,
+      navigatorKey: shellNavigatorKey,
       builder: (context, state, child) {
         return MainScreen(
-          shellContext: _shellNavigatorKey.currentContext,
+          shellContext: shellNavigatorKey.currentContext,
           child: child,
         );
       },
@@ -34,7 +33,7 @@ final router = GoRouter(
         if (await LocalDataHelper.getUserToken() == "") {
           return AppRoutes.login;
         }
-        return state.fullPath;
+        // return state.fullPath;
       },
       routes: [
         GoRoute(
@@ -46,10 +45,13 @@ final router = GoRouter(
           builder: (context, state) => const WaterQualityScreen(),
         ),
         GoRoute(
-          path: AppRoutes.sensorCaliberation,
-          builder: (context, state) => const SensorCalibration(),
+          name: AppRoutes.sensorCaliberation,
+          path: "${AppRoutes.sensorCaliberation}/:pondId",
+          builder: (context, state) =>
+              SensorCalibration(pondId: state.pathParameters["pondId"]!),
         ),
         GoRoute(
+          name: AppRoutes.conclusiveOrRawLiveData,
           path: AppRoutes.conclusiveOrRawLiveData,
           builder: (context, state) => const ConclusiveOrRawLiveDataScreen(),
         ),

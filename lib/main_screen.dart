@@ -1,6 +1,4 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -105,7 +103,7 @@ class _MainScreenState extends State<MainScreen> {
     final localizations = FluentLocalizations.of(context);
 
     final appTheme = context.watch<AppTheme>();
-    final theme = FluentTheme.of(context);
+    // final theme = FluentTheme.of(context);
     if (router.canPop() == false) {
       setState(() {});
     }
@@ -113,44 +111,44 @@ class _MainScreenState extends State<MainScreen> {
       key: viewKey,
       appBar: NavigationAppBar(
         automaticallyImplyLeading: false,
-        leading: () {
-          final enabled = router.canPop();
+        // leading: () {
+        //   final enabled = router.canPop();
 
-          final onPressed = enabled
-              ? () {
-                  if (router.canPop()) {
-                    context.pop();
-                    setState(() {});
-                  }
-                }
-              : null;
-          return NavigationPaneTheme(
-            data: NavigationPaneTheme.of(context).merge(NavigationPaneThemeData(
-              unselectedIconColor: ButtonState.resolveWith((states) {
-                if (states.isDisabled) {
-                  return ButtonThemeData.buttonColor(context, states);
-                }
-                return ButtonThemeData.uncheckedInputColor(
-                  FluentTheme.of(context),
-                  states,
-                ).basedOnLuminance();
-              }),
-            )),
-            child: Builder(
-              builder: (context) => PaneItem(
-                icon: const Center(child: Icon(FluentIcons.back, size: 12.0)),
-                title: Text(localizations.backButtonTooltip),
-                body: const SizedBox.shrink(),
-                enabled: enabled,
-              ).build(
-                context,
-                false,
-                onPressed,
-                displayMode: PaneDisplayMode.compact,
-              ),
-            ),
-          );
-        }(),
+        //   final onPressed = enabled
+        //       ? () {
+        //           if (router.canPop()) {
+        //             context.pop();
+        //             setState(() {});
+        //           }
+        //         }
+        //       : null;
+        //   return NavigationPaneTheme(
+        //     data: NavigationPaneTheme.of(context).merge(NavigationPaneThemeData(
+        //       unselectedIconColor: ButtonState.resolveWith((states) {
+        //         if (states.isDisabled) {
+        //           return ButtonThemeData.buttonColor(context, states);
+        //         }
+        //         return ButtonThemeData.uncheckedInputColor(
+        //           FluentTheme.of(context),
+        //           states,
+        //         ).basedOnLuminance();
+        //       }),
+        //     )),
+        //     child: Builder(
+        //       builder: (context) => PaneItem(
+        //         icon: const Center(child: Icon(FluentIcons.back, size: 12.0)),
+        //         title: Text(localizations.backButtonTooltip),
+        //         body: const SizedBox.shrink(),
+        //         enabled: enabled,
+        //       ).build(
+        //         context,
+        //         false,
+        //         onPressed,
+        //         displayMode: PaneDisplayMode.compact,
+        //       ),
+        //     ),
+        //   );
+        // }(),
         title: () {
           // if (kIsWeb) {
           //   return const Align(
@@ -201,53 +199,53 @@ class _MainScreenState extends State<MainScreen> {
       },
       pane: NavigationPane(
         selected: _calculateSelectedIndex(context),
-        header: SizedBox(
-          height: kOneLineTileHeight,
-          child: Row(
-            children: [
-              Expanded(
-                child: Align(
-                  // alignment: AlignmentDirectional.centerStart,
-                  child: SvgPicture.asset(
-                    "assets/images/logo.svg",
-                    height: 80,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: appTheme.displayMode == PaneDisplayMode.open
-                    ? const Icon(FluentIcons.close_pane)
-                    : const Icon(FluentIcons.open_pane),
-                onPressed: () {
-                  appTheme.displayMode =
-                      appTheme.displayMode == PaneDisplayMode.open
-                          ? PaneDisplayMode.compact
-                          : PaneDisplayMode.open;
-                },
-              ),
-            ],
-          ),
-          // child: ShaderMask(
-          //   shaderCallback: (rect) {
-          //     final color = appTheme.color.defaultBrushFor(
-          //       theme.brightness,
-          //     );
-          //     return LinearGradient(
-          //       colors: [
-          //         color,
-          //         color,
-          //       ],
-          //     ).createShader(rect);
-          //   },
+        // header: SizedBox(
+        //   height: kOneLineTileHeight,
+        //   child: Row(
+        //     children: [
+        //       Expanded(
+        //         child: Align(
+        //           // alignment: AlignmentDirectional.centerStart,
+        //           child: SvgPicture.asset(
+        //             "assets/images/logo.svg",
+        //             height: 80,
+        //           ),
+        //         ),
+        //       ),
+        //       IconButton(
+        //         icon: appTheme.displayMode == PaneDisplayMode.open
+        //             ? const Icon(FluentIcons.close_pane)
+        //             : const Icon(FluentIcons.open_pane),
+        //         onPressed: () {
+        //           appTheme.displayMode =
+        //               appTheme.displayMode == PaneDisplayMode.open
+        //                   ? PaneDisplayMode.compact
+        //                   : PaneDisplayMode.open;
+        //         },
+        //       ),
+        //     ],
+        //   ),
+        //   // child: ShaderMask(
+        //   //   shaderCallback: (rect) {
+        //   //     final color = appTheme.color.defaultBrushFor(
+        //   //       theme.brightness,
+        //   //     );
+        //   //     return LinearGradient(
+        //   //       colors: [
+        //   //         color,
+        //   //         color,
+        //   //       ],
+        //   //     ).createShader(rect);
+        //   //   },
 
-          //   // child: const FlutterLogo(
-          //   //   style: FlutterLogoStyle.horizontal,
-          //   //   size: 80.0,
-          //   //   textColor: Colors.white,
-          //   //   duration: Duration.zero,
-          //   // ),
-          // ),
-        ),
+        //   //   // child: const FlutterLogo(
+        //   //   //   style: FlutterLogoStyle.horizontal,
+        //   //   //   size: 80.0,
+        //   //   //   textColor: Colors.white,
+        //   //   //   duration: Duration.zero,
+        //   //   // ),
+        //   // ),
+        // ),
         displayMode: appTheme.displayMode,
         indicator: () {
           switch (appTheme.indicator) {

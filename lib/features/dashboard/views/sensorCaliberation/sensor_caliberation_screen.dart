@@ -1,3 +1,5 @@
+// ignore_for_file: empty_catches
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,9 +11,8 @@ import '../../../../shared/widgets/inputs/my_text_field.dart';
 import '../../controller/sensor_controller.dart';
 
 class SensorCalibration extends StatefulWidget {
-  const SensorCalibration({
-    super.key,
-  });
+  final String pondId;
+  const SensorCalibration({super.key, required this.pondId});
 
   @override
   State<SensorCalibration> createState() => _SensorCalibrationState();
@@ -44,8 +45,7 @@ class _SensorCalibrationState extends State<SensorCalibration> {
     setState(() {
       isLoad = true;
     });
-    calibrationValues =
-        await controller.fetchCalibrationValues(Get.parameters['pondId']!);
+    calibrationValues = await controller.fetchCalibrationValues(widget.pondId);
 
     _setCalibrationValues();
 
