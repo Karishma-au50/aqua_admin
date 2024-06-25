@@ -19,6 +19,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../../../../model/farm_model.dart';
 import '../../../../model/pond_model.dart';
 import '../../../../shared/constant/font_helper.dart';
+import '../../../../shared/widgets/inputs/my_text_field.dart';
 import '../../controller/water_quality_controller.dart';
 
 class LineChart extends StatefulWidget {
@@ -32,6 +33,12 @@ class _LineChartState extends State<LineChart> {
   final WaterQualityController controller = Get.find();
   final GlobalKey<SfCartesianChartState> _chartKey = GlobalKey();
   String selectedFrequency = '5 mins';
+  final TextEditingController descController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +62,27 @@ class _LineChartState extends State<LineChart> {
                   intervalType: DateTimeIntervalType.auto,
                   dateFormat: DateFormat("dd MMM yy\nHH:mm:ss"),
                 ),
-                tooltipBehavior: TooltipBehavior(enable: true),
+                primaryYAxis: NumericAxis(
+                  name: 'PrimaryYAxis',
+                  title: AxisTitle(
+                      text:
+                          '${controller.waterQualityChartModel.first.sensor} Value'),
+                ),
+                axes: controller.waterQualityChartModel.length > 1
+                    ? [
+                        NumericAxis(
+                            name: 'SecondaryYAxis',
+                            opposedPosition: true,
+                            title: AxisTitle(
+                                text:
+                                    '${controller.waterQualityChartModel.last.sensor}  Value'
+                                // controller
+                                //     .waterQualityChartModel.first.sensor),
+                                )),
+                      ]
+                    : [],
                 series: _buildLineSeries(),
+                tooltipBehavior: TooltipBehavior(enable: true),
                 trackballBehavior: TrackballBehavior(
                   enable: true,
                   activationMode: ActivationMode.none,
@@ -66,6 +92,11 @@ class _LineChartState extends State<LineChart> {
                     textStyle: TextStyle(color: Colors.white),
                   ),
                 ),
+                legend: const Legend(
+                    isVisible: true,
+                    position: LegendPosition.top,
+                    overflowMode: LegendItemOverflowMode.wrap,
+                    alignment: ChartAlignment.center),
               );
             }),
           ),
@@ -132,10 +163,23 @@ class _LineChartState extends State<LineChart> {
         }),
         Obx(() {
           if (controller.waterQualityChartModel.isNotEmpty) {
+            return MyTextField(
+              controller: descController,
+              hintText: "",
+              labelText: "Notes",
+              hindStyle: GlobalFonts.ts14px500w,
+              maxLines: 4,
+            );
+          } else {
+            return const SizedBox();
+          }
+        }),
+        Obx(() {
+          if (controller.waterQualityChartModel.isNotEmpty) {
             return Align(
               alignment: Alignment.topRight,
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(15.0),
                 child: MyButton(
                   width: 100,
                   textStyle: GlobalFonts.ts14px600w,
@@ -163,7 +207,6 @@ class _LineChartState extends State<LineChart> {
     ];
 
     // Filter data based on selected frequency
-
     return controller.waterQualityChartModel
         .map(
           (element) => LineSeries<SensorChartModel, DateTime>(
@@ -179,9 +222,20 @@ class _LineChartState extends State<LineChart> {
               color: Colors.transparent,
               borderColor: Colors.transparent,
             ),
+            // yAxisName:
+            //     element.sensor == 'DO' ? 'SecondaryYAxis' : 'PrimaryYAxis',
           ),
         )
         .toList();
+  }
+
+  Widget buildChart() {
+    return SfCartesianChart(
+      legend: const Legend(isVisible: true, position: LegendPosition.top),
+      series: _buildLineSeries(),
+      primaryXAxis: const DateTimeAxis(),
+      primaryYAxis: const NumericAxis(),
+    );
   }
 
   List<SensorChartModel> _filterDataByFrequency(List<SensorChartModel> data) {
@@ -404,7 +458,7 @@ class _LineChartState extends State<LineChart> {
 
       // Add comments section below the chart
       const double commentsTopMargin = chartTopMargin + chartHeight + 20;
-      const String comments = 'Comments: This is for testing purpose';
+      String comments = 'Comments: ${descController.text}';
       page.graphics.drawString(
         comments,
         PdfStandardFont(PdfFontFamily.helvetica, 12),

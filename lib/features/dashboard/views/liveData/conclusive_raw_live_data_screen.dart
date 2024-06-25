@@ -499,8 +499,8 @@ class _ConclusiveOrRawLiveDataScreenState
                                 Center(
                                   child: Text(
                                       data.receivedTime != null
-                                          ? DateFormat('dd MMM yy').format(
-                                              DateTime.parse(
+                                          ? DateFormat('dd MMM yy\nHH:mm:ss')
+                                              .format(DateTime.parse(
                                                   data.receivedTime ?? ''))
                                           : '-',
                                       style: GlobalFonts.ts14px500w),

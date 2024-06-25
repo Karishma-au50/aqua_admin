@@ -49,9 +49,9 @@ class _ValueParameterState extends State<ValueParameter> {
     "TAN",
     "NO2",
     "NO3",
-    // "PH & DO",
-    // "PH & NH3",
-    // "NH4 & NH3"
+    "PH & DO",
+    "PH & NH3",
+    "NH4 & NH3"
   ];
 
   List<String> frequency = [
@@ -69,10 +69,11 @@ class _ValueParameterState extends State<ValueParameter> {
 
   DateTimeRange? selectedDateRange;
   Future<void> _selectDateRange(BuildContext context) async {
+    final DateTime today = DateTime.now();
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: today,
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -91,8 +92,6 @@ class _ValueParameterState extends State<ValueParameter> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                // height: MediaQuery.of(context).size.height * 0.6,
-                // width: MediaQuery.of(context).size.width * 0.7,
                 constraints:
                     const BoxConstraints(maxWidth: 500, maxHeight: 570),
                 child: child,
@@ -109,6 +108,7 @@ class _ValueParameterState extends State<ValueParameter> {
       });
     }
   }
+
 
   @override
   void initState() {
@@ -286,7 +286,13 @@ class _ValueParameterState extends State<ValueParameter> {
                                     const BoxDecoration(color: Colors.white),
                                 child: CheckboxListTile(
                                   title: Text(
-                                      "${suggestion.name} (${suggestion.pondId})"),
+                                    "${suggestion.name} (${suggestion.pondId})",
+                                    style: TextStyle(
+                                      color: suggestion.isDeleted == true
+                                          ? Colors.red
+                                          : Colors.black,
+                                    ),
+                                  ),
                                   value: selectedPonds.contains(suggestion),
                                   onChanged: (bool? selected) {
                                     setState(() {
@@ -722,9 +728,16 @@ class _ValueParameterState extends State<ValueParameter> {
                         startDate: startDate,
                         endDate: endDate,
                       );
+                      List<String> parameterValues =
+                          parameterValue.contains('&')
+                              ? parameterValue
+                                  .split('&')
+                                  .map((e) => e.trim())
+                                  .toList()
+                              : [parameterValue];
 
                       await controller.getWaterQualityChartData(
-                          pondIds, [parameterValue], startDate, endDate);
+                          pondIds, parameterValues, startDate, endDate);
                     }),
               )
             ],

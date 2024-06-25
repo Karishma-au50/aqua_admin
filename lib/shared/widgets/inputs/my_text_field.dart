@@ -26,6 +26,7 @@ class MyTextField extends StatefulWidget {
   final Function(String)? onChanged;
   final bool showCounter;
   final FocusNode? focusNode;
+  final int? maxLines;
   const MyTextField({
     super.key,
     this.textStyle,
@@ -50,6 +51,7 @@ class MyTextField extends StatefulWidget {
     this.onChanged,
     this.showCounter = false,
     this.focusNode,
+    this.maxLines,
   });
 
   @override
@@ -65,8 +67,8 @@ class _MyTextFieldState extends State<MyTextField> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.start,
         children: [
           TextFormField(
             controller: widget.controller,
@@ -104,6 +106,7 @@ class _MyTextFieldState extends State<MyTextField> {
             cursorColor: greenColor,
             onTap: widget.onTap,
             maxLength: widget.maxLength,
+            maxLines: widget.maxLines ?? 1,
             // autovalidateMode: AutovalidateMode.disabled,
             inputFormatters: widget.inputFormatters,
             decoration: InputDecoration(
