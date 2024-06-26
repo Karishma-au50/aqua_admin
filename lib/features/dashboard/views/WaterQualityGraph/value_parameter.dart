@@ -109,7 +109,6 @@ class _ValueParameterState extends State<ValueParameter> {
     }
   }
 
-
   @override
   void initState() {
     controller.getfarmerpondinfo().then((value) {
@@ -513,25 +512,28 @@ class _ValueParameterState extends State<ValueParameter> {
                           Wrap(
                             children: List.generate(
                               selectedPonds.length > 1 ? 7 : options.length,
-                              (index) => SizedBox(
-                                width: 120,
-                                child: Row(
-                                  children: [
-                                    Radio(
-                                      activeColor: greenColor,
-                                      value: options[index],
-                                      groupValue: parameterValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          parameterValue = value!;
-                                        });
-                                      },
-                                    ),
-                                    Text(
-                                      options[index],
-                                      style: GlobalFonts.ts14px500w,
-                                    ),
-                                  ],
+                              (index) => Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  width: 120,
+                                  child: Row(
+                                    children: [
+                                      Radio(
+                                        activeColor: greenColor,
+                                        value: options[index],
+                                        groupValue: parameterValue,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            parameterValue = value!;
+                                          });
+                                        },
+                                      ),
+                                      Text(
+                                        options[index],
+                                        style: GlobalFonts.ts14px500w,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -727,6 +729,7 @@ class _ValueParameterState extends State<ValueParameter> {
                         sensor: parameterValue,
                         startDate: startDate,
                         endDate: endDate,
+                        isComb: parameterValue.contains('&'),
                       );
                       List<String> parameterValues =
                           parameterValue.contains('&')

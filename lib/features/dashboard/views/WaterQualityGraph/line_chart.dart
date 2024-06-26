@@ -68,7 +68,7 @@ class _LineChartState extends State<LineChart> {
                       text:
                           '${controller.waterQualityChartModel.first.sensor} Value'),
                 ),
-                axes: controller.waterQualityChartModel.length > 1
+                axes: controller.valueParameterModel.isComb
                     ? [
                         NumericAxis(
                             name: 'SecondaryYAxis',

@@ -7,9 +7,15 @@ class ValueParameterModel {
   String? sensor;
   DateTime? startDate;
   DateTime? endDate;
+  bool isComb;
 
   ValueParameterModel(
-      {this.ponds, this.farms, this.sensor, this.startDate, this.endDate});
+      {this.ponds,
+      this.farms,
+      this.sensor,
+      this.startDate,
+      this.endDate,
+      this.isComb = false});
 
   factory ValueParameterModel.fromJson(Map<String, dynamic> json) {
     return ValueParameterModel(

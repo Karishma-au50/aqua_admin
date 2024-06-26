@@ -36,7 +36,7 @@ class WaterQualityService extends BaseApiService {
         "pondIds": pondIds,
         "sensors": {for (var item in sensors) item: 1},
         "startTime": startTime.millisecondsSinceEpoch,
-        "endTime": endTime.millisecondsSinceEpoch,
+        "endTime": endTime.add(const Duration(days: 1)).millisecondsSinceEpoch,
       },
       options: Options(
         headers: {"authorization": await LocalDataHelper.getUserToken()},
