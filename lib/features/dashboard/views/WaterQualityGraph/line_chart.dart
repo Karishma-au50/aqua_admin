@@ -386,21 +386,23 @@ class _LineChartState extends State<LineChart> {
     DateTime startTime = DateTime(0, 1, 1, 8, 0, 0); // 8:00 AM
     DateTime endTime = DateTime(0, 1, 1, 20, 0, 0); // 8:00 PM
 
-    return controller.waterQualityChartModel.map(
-      (element) {
-        final day = element.data.where((date) {
-          DateTime timeOnly = DateTime(0, 1, 1, date.dateTime.hour,
-              date.dateTime.minute, date.dateTime.second);
-          return timeOnly.isAfter(startTime) && timeOnly.isBefore(endTime);
-        }).toList();
+    List<AreaSeries<SensorChartModel, DateTime>> areaSeries =
+        <AreaSeries<SensorChartModel, DateTime>>[];
 
-        final night = element.data.where((date) {
-          DateTime timeOnly = DateTime(0, 1, 1, date.dateTime.hour,
-              date.dateTime.minute, date.dateTime.second);
-          return timeOnly.isBefore(startTime) && timeOnly.isAfter(endTime);
-        }).toList();
+    for (var element in controller.waterQualityChartModel) {
+      final day = element.data.where((date) {
+        DateTime timeOnly = DateTime(0, 1, 1, date.dateTime.hour,
+            date.dateTime.minute, date.dateTime.second);
+        return timeOnly.isAfter(startTime) && timeOnly.isBefore(endTime);
+      }).toList();
 
-        return AreaSeries<SensorChartModel, DateTime>(
+      final night = element.data.where((date) {
+        DateTime timeOnly = DateTime(0, 1, 1, date.dateTime.hour,
+            date.dateTime.minute, date.dateTime.second);
+        return timeOnly.isAfter(endTime) && timeOnly.isBefore(startTime);
+      }).toList();
+      if (day.isNotEmpty) {
+        areaSeries.add(AreaSeries<SensorChartModel, DateTime>(
           dataSource: _filterDataByFrequency(day),
           xValueMapper: (data, _) => data.dateTime,
           yValueMapper: (data, _) => data.value,
@@ -420,9 +422,33 @@ class _LineChartState extends State<LineChart> {
             color: Colors.transparent,
             borderColor: Colors.transparent,
           ),
-        );
-      },
-    ).toList();
+        ));
+      } else if (night.isNotEmpty) {
+        areaSeries.add(AreaSeries<SensorChartModel, DateTime>(
+          dataSource: _filterDataByFrequency(night),
+          xValueMapper: (data, _) => data.dateTime,
+          yValueMapper: (data, _) => data.value,
+          borderColor: colors[
+              controller.waterQualityChartModel.indexOf(element) %
+                  colors.length],
+          borderWidth: 2,
+          color: colors[controller.waterQualityChartModel.indexOf(element) %
+                  colors.length]
+              .withOpacity(0.2),
+          name: "${element.sensor} (${element.pondId})",
+          markerSettings: const MarkerSettings(isVisible: false),
+          // pointColorMapper: (datum, in
+          //dex) {},
+          emptyPointSettings: const EmptyPointSettings(
+            mode: EmptyPointMode.gap,
+            color: Colors.transparent,
+            borderColor: Colors.transparent,
+          ),
+        ));
+      }
+    }
+
+    return areaSeries;
   }
 
   List<LineSeries<SensorChartModel, DateTime>> _buildLineSeries() {
