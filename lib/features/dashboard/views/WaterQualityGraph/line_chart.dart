@@ -57,7 +57,7 @@ class _LineChartState extends State<LineChart> {
                 );
               } else {
                 bool isSinglePond =
-                    controller.waterQualityChartModel.length == 1;
+                    controller.waterQualityChartModel.isNotEmpty;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,74 +381,29 @@ class _LineChartState extends State<LineChart> {
       Colors.purple,
       Colors.cyan
     ];
-    // final DateTime startDate = DateTime(  26,Jun,2024);
-    // final DateTime endDate = DateTime(2024, 6, 27);
-    DateTime startTime = DateTime(0, 1, 1, 8, 0, 0); // 8:00 AM
-    DateTime endTime = DateTime(0, 1, 1, 20, 0, 0); // 8:00 PM
-
-    List<AreaSeries<SensorChartModel, DateTime>> areaSeries =
-        <AreaSeries<SensorChartModel, DateTime>>[];
-
-    for (var element in controller.waterQualityChartModel) {
-      final day = element.data.where((date) {
-        DateTime timeOnly = DateTime(0, 1, 1, date.dateTime.hour,
-            date.dateTime.minute, date.dateTime.second);
-        return timeOnly.isAfter(startTime) && timeOnly.isBefore(endTime);
-      }).toList();
-
-      final night = element.data.where((date) {
-        DateTime timeOnly = DateTime(0, 1, 1, date.dateTime.hour,
-            date.dateTime.minute, date.dateTime.second);
-        return timeOnly.isAfter(endTime) && timeOnly.isBefore(startTime);
-      }).toList();
-      if (day.isNotEmpty) {
-        areaSeries.add(AreaSeries<SensorChartModel, DateTime>(
-          dataSource: _filterDataByFrequency(day),
-          xValueMapper: (data, _) => data.dateTime,
-          yValueMapper: (data, _) => data.value,
-          borderColor: colors[
-              controller.waterQualityChartModel.indexOf(element) %
-                  colors.length],
-          borderWidth: 2,
-          color: colors[controller.waterQualityChartModel.indexOf(element) %
-                  colors.length]
-              .withOpacity(0.5),
-          name: "${element.sensor} (${element.pondId})",
-          markerSettings: const MarkerSettings(isVisible: false),
-          // pointColorMapper: (datum, in
-          //dex) {},
-          emptyPointSettings: const EmptyPointSettings(
-            mode: EmptyPointMode.gap,
-            color: Colors.transparent,
-            borderColor: Colors.transparent,
+    return controller.waterQualityChartModel
+        .map(
+          (element) => AreaSeries<SensorChartModel, DateTime>(
+            dataSource: _filterDataByFrequency(element.data),
+            xValueMapper: (data, _) => data.dateTime,
+            yValueMapper: (data, _) => data.value,
+            borderColor: colors[
+                controller.waterQualityChartModel.indexOf(element) %
+                    colors.length],
+            borderWidth: 2,
+            color: colors[controller.waterQualityChartModel.indexOf(element) %
+                    colors.length]
+                .withOpacity(0.5),
+            name: "${element.sensor} (${element.pondId})",
+            markerSettings: const MarkerSettings(isVisible: false),
+            emptyPointSettings: const EmptyPointSettings(
+              mode: EmptyPointMode.gap,
+              color: Colors.transparent,
+              borderColor: Colors.transparent,
+            ),
           ),
-        ));
-      } else if (night.isNotEmpty) {
-        areaSeries.add(AreaSeries<SensorChartModel, DateTime>(
-          dataSource: _filterDataByFrequency(night),
-          xValueMapper: (data, _) => data.dateTime,
-          yValueMapper: (data, _) => data.value,
-          borderColor: colors[
-              controller.waterQualityChartModel.indexOf(element) %
-                  colors.length],
-          borderWidth: 2,
-          color: colors[controller.waterQualityChartModel.indexOf(element) %
-                  colors.length]
-              .withOpacity(0.2),
-          name: "${element.sensor} (${element.pondId})",
-          markerSettings: const MarkerSettings(isVisible: false),
-          // pointColorMapper: (datum, in
-          //dex) {},
-          emptyPointSettings: const EmptyPointSettings(
-            mode: EmptyPointMode.gap,
-            color: Colors.transparent,
-            borderColor: Colors.transparent,
-          ),
-        ));
-      }
-    }
-
-    return areaSeries;
+        )
+        .toList();
   }
 
   List<LineSeries<SensorChartModel, DateTime>> _buildLineSeries() {

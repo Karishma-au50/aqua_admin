@@ -78,4 +78,18 @@ class SensorController extends GetxController {
       return null;
     }
   }
+
+  // farm cleanup
+  Future<void> farmCleanUp(String id) async {
+    try {
+      final res = await _api.farmCleanUp(id);
+      if (!res.error) {
+        MyToasts.toastSuccess(res.message ?? "Success");
+      } else {
+        MyToasts.toastError(res.message ?? "Error");
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+    }
+  }
 }

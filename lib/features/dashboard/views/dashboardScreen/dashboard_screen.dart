@@ -68,12 +68,14 @@ class DashBoardScreen extends StatelessWidget {
                     },
                     title: 'Live Data',
                   ),
-                  // DashboardItem(
-                  //   ontab: () async {
-                  //     NavHelper.pushToNamed(AppRoutes.waterQuality);
-                  //   },
-                  //   title: 'Graph Details',
-                  // )
+                  DashboardItem(
+                    ontab: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) => const FarmCleanUpDialog());
+                    },
+                    title: 'Farm CleanUp',
+                  ),
                 ],
               ),
             ),
@@ -126,6 +128,7 @@ class DashboardItem extends StatelessWidget {
   }
 }
 
+// sensor caliberation
 class SenserCaliberationDialoge extends StatefulWidget {
   const SenserCaliberationDialoge({
     super.key,
@@ -217,6 +220,7 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
     return SizedBox(
       width: 400,
       child: Dialog(
+        backgroundColor: Colors.white,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 300),
           child: Padding(
@@ -227,9 +231,9 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
               children: [
                 MyTextField(
                   controller: deviceID,
-                  hintText: "Enter Device ID",
+                  hintText: "Enter dl no",
                   textStyle: GlobalFonts.ts20px500w(),
-                  labelText: "Device ID",
+                  labelText: "Dl no",
                 ),
                 const SizedBox(
                   height: 15,
@@ -242,9 +246,68 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
                       color: greenColor,
                       text: 'SUBMIT',
                       onPressed: () async {
-                        // Get.back();
-                        context.pop();
                         await controller.cleanInventory(deviceID.text);
+                        context.pop();
+                      }),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// clean farm popup
+// clean inventory popup
+class FarmCleanUpDialog extends StatefulWidget {
+  const FarmCleanUpDialog({
+    super.key,
+    this.id,
+  });
+  final String? id;
+
+  @override
+  State<FarmCleanUpDialog> createState() => _FarmCleanUpDialog();
+}
+
+class _FarmCleanUpDialog extends State<FarmCleanUpDialog> {
+  TextEditingController deviceID = TextEditingController();
+  final SensorController controller = Get.put(SensorController());
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 400,
+      child: Dialog(
+        backgroundColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 300),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                MyTextField(
+                  controller: deviceID,
+                  hintText: "Enter dl no",
+                  textStyle: GlobalFonts.ts20px500w(),
+                  labelText: "Dl no",
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Center(
+                  child: MyButton(
+                      height: 50,
+                      textColor: Colors.white,
+                      width: context.width * 0.5,
+                      color: greenColor,
+                      text: 'SUBMIT',
+                      onPressed: () async {
+                        await controller.farmCleanUp(deviceID.text);
+                        context.pop();
                       }),
                 ),
               ],

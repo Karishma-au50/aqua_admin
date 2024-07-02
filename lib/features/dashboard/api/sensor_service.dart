@@ -106,4 +106,18 @@ class SensorService extends BaseApiService {
     );
     return resModel;
   }
+
+  Future<ResponseModel> farmCleanUp(
+    String id,
+  ) async {
+    String token = await LocalDataHelper.getUserToken();
+    final res = await delete(
+      "/admin/deletefarmPond?deviceId=$id",
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    return ResponseModel.empty().fromJson(res.data);
+  }
 }
