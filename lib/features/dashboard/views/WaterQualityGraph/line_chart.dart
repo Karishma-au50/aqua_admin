@@ -344,7 +344,7 @@ class _LineChartState extends State<LineChart> {
               hintText: "",
               labelText: "Notes",
               hindStyle: GlobalFonts.ts14px500w,
-              maxLines: 4,
+              // maxLines: 2,
             );
           } else {
             return const SizedBox();
