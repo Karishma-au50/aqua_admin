@@ -42,8 +42,6 @@ class _LineChartState extends State<LineChart> {
 
   @override
   Widget build(BuildContext context) {
-    bool isSinglePond = controller.waterQualityChartModel.length == 1;
-
     return Column(
       children: [
         Padding(
@@ -109,7 +107,8 @@ class _LineChartState extends State<LineChart> {
                       ),
                     Expanded(
                       child: SfCartesianChart(
-                        key: ValueKey(showAreaSeries),
+                        key: _chartKey,
+                        // key: ValueKey(showAreaSeries),
                         primaryXAxis: DateTimeAxis(
                           majorGridLines: const MajorGridLines(width: 0),
                           edgeLabelPlacement: EdgeLabelPlacement.shift,
@@ -158,125 +157,6 @@ class _LineChartState extends State<LineChart> {
             }),
           ),
         ),
-
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-        //   child: SizedBox(
-        //     height: 300,
-        //     child: Obx(() {
-        //       if (controller.waterQualityChartModel.isEmpty) {
-        //         return const Center(
-        //           child: Text("No Data Found"),
-        //         );
-        //       } else {
-        //         if (isSinglePond) {
-        //           return Row(
-        //             mainAxisAlignment: MainAxisAlignment.center,
-        //             children: [
-        //               Text('Show Area Series'),
-        //               Switch(
-        //                 value: showAreaSeries,
-        //                 onChanged: (value) {
-        //                   setState(() {
-        //                     showAreaSeries = true;
-        //                   });
-        //                 },
-        //               ),
-        //             ],
-        //           );
-        //         }
-        //         return SfCartesianChart(
-        //           key: ValueKey(showAreaSeries),
-        //           primaryXAxis: DateTimeAxis(
-        //             majorGridLines: const MajorGridLines(width: 0),
-        //             edgeLabelPlacement: EdgeLabelPlacement.shift,
-        //             intervalType: DateTimeIntervalType.auto,
-        //             dateFormat: DateFormat("dd MMM yy\nHH:mm:ss"),
-        //           ),
-        //           primaryYAxis: NumericAxis(
-        //             name: 'PrimaryYAxis',
-        //             title: AxisTitle(
-        //                 text:
-        //                     '${controller.waterQualityChartModel.first.sensor} Value'),
-        //           ),
-        //           axes: controller.valueParameterModel.isComb
-        //               ? [
-        //                   NumericAxis(
-        //                       name: 'SecondaryYAxis',
-        //                       opposedPosition: true,
-        //                       title: AxisTitle(
-        //                           text:
-        //                               '${controller.waterQualityChartModel.last.sensor}  Value')),
-        //                 ]
-        //               : [],
-        //           series:
-        //               showAreaSeries ? _buildAreaSeries() : _buildLineSeries(),
-        //           tooltipBehavior: TooltipBehavior(enable: true),
-        //           trackballBehavior: TrackballBehavior(
-        //             enable: true,
-        //             activationMode: ActivationMode.none,
-        //             tooltipSettings: const InteractiveTooltip(
-        //               enable: true,
-        //               color: Colors.black,
-        //               textStyle: TextStyle(color: Colors.white),
-        //             ),
-        //           ),
-        //           legend: const Legend(
-        //               isVisible: true,
-        //               position: LegendPosition.top,
-        //               overflowMode: LegendItemOverflowMode.wrap,
-        //               alignment: ChartAlignment.center),
-        //         );
-        //       }
-        //       return SizedBox();
-        //       // SfCartesianChart(
-        //       //   key: _chartKey,
-        //       //   primaryXAxis: DateTimeAxis(
-        //       //     majorGridLines: const MajorGridLines(width: 0),
-        //       //     edgeLabelPlacement: EdgeLabelPlacement.shift,
-        //       //     intervalType: DateTimeIntervalType.auto,
-        //       //     dateFormat: DateFormat("dd MMM yy\nHH:mm:ss"),
-        //       //   ),
-        //       //   primaryYAxis: NumericAxis(
-        //       //     name: 'PrimaryYAxis',
-        //       //     title: AxisTitle(
-        //       //         text:
-        //       //             '${controller.waterQualityChartModel.first.sensor} Value'),
-        //       //   ),
-        //       //   axes: controller.valueParameterModel.isComb
-        //       //       ? [
-        //       //           NumericAxis(
-        //       //               name: 'SecondaryYAxis',
-        //       //               opposedPosition: true,
-        //       //               title: AxisTitle(
-        //       //                   text:
-        //       //                       '${controller.waterQualityChartModel.last.sensor}  Value'
-        //       //                   // controller
-        //       //                   //     .waterQualityChartModel.first.sensor),
-        //       //                   )),
-        //       //         ]
-        //       //       : [],
-        //       //   series: _buildLineSeries(),
-        //       //   tooltipBehavior: TooltipBehavior(enable: true),
-        //       //   trackballBehavior: TrackballBehavior(
-        //       //     enable: true,
-        //       //     activationMode: ActivationMode.none,
-        //       //     tooltipSettings: const InteractiveTooltip(
-        //       //       enable: true,
-        //       //       color: Colors.black,
-        //       //       textStyle: TextStyle(color: Colors.white),
-        //       //     ),
-        //       //   ),
-        //       //   legend: const Legend(
-        //       //       isVisible: true,
-        //       //       position: LegendPosition.top,
-        //       //       overflowMode: LegendItemOverflowMode.wrap,
-        //       //       alignment: ChartAlignment.center),
-        //       // );
-        //     }),
-        //   ),
-        // ),
-
         Obx(() {
           if (controller.waterQualityChartModel.isNotEmpty) {
             return Container(
@@ -435,62 +315,6 @@ class _LineChartState extends State<LineChart> {
         )
         .toList();
   }
-
-  // List<AreaSeries<SensorChartModel, DateTime>> _buildLineSeries() {
-  //   List<Color> colors = [
-  //     Colors.orange,
-  //     Colors.green,
-  //     Colors.blue,
-  //     Colors.red,
-  //     Colors.purple,
-  //     Colors.cyan
-  //   ];
-
-  //   // Filter data based on selected frequency
-  //   return controller.waterQualityChartModel
-  //       .map(
-  //         (element) => AreaSeries<SensorChartModel, DateTime>(
-  //           dataSource: _filterDataByFrequency(element.data),
-  //           xValueMapper: (data, _) => data.dateTime,
-  //           yValueMapper: (data, _) => data.value,
-  //           borderColor: colors[
-  //               controller.waterQualityChartModel.indexOf(element) %
-  //                   colors.length],
-  //           borderWidth: 2,
-  //           color: colors[controller.waterQualityChartModel.indexOf(element) %
-  //                   colors.length]
-  //               .withOpacity(0.5),
-  //           name: "${element.sensor} (${element.pondId})",
-  //           markerSettings: const MarkerSettings(isVisible: false),
-  //           emptyPointSettings: const EmptyPointSettings(
-  //             mode: EmptyPointMode.gap,
-  //             color: Colors.transparent,
-  //             borderColor: Colors.transparent,
-  //           ),
-  //         ),
-  //       )
-  //       .toList();
-  //   // return controller.waterQualityChartModel
-  //   //     .map(
-  //   //       (element) => LineSeries<SensorChartModel, DateTime>(
-  //   //         dataSource: _filterDataByFrequency(element.data),
-  //   //         xValueMapper: (data, _) => data.dateTime,
-  //   //         yValueMapper: (data, _) => data.value,
-  //   //         markerSettings: const MarkerSettings(isVisible: false),
-  //   //         color: colors[controller.waterQualityChartModel.indexOf(element) %
-  //   //             colors.length],
-  //   //         name: "${element.sensor} (${element.pondId})",
-  //   //         emptyPointSettings: const EmptyPointSettings(
-  //   //           mode: EmptyPointMode.gap,
-  //   //           color: Colors.transparent,
-  //   //           borderColor: Colors.transparent,
-  //   //         ),
-  //   //         // yAxisName:
-  //   //         //     element.sensor == 'DO' ? 'SecondaryYAxis' : 'PrimaryYAxis',
-  //   //       ),
-  //   //     )
-  //   //     .toList();
-  // }
 
   Widget buildChart() {
     return SfCartesianChart(
@@ -749,4 +573,5 @@ class _LineChartState extends State<LineChart> {
       MyToasts.toastError("Error exporting chart as PDF document.");
     }
   }
+
 }

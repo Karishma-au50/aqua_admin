@@ -231,9 +231,9 @@ class _CleanInventoryDialogState extends State<CleanInventoryDialog> {
               children: [
                 MyTextField(
                   controller: deviceID,
-                  hintText: "Enter dl no",
+                  hintText: "Enter Dlname",
                   textStyle: GlobalFonts.ts20px500w(),
-                  labelText: "Dl no",
+                  labelText: "Dlname",
                 ),
                 const SizedBox(
                   height: 15,
@@ -291,9 +291,9 @@ class _FarmCleanUpDialog extends State<FarmCleanUpDialog> {
               children: [
                 MyTextField(
                   controller: deviceID,
-                  hintText: "Enter dl no",
+                  hintText: "Enter Dlname",
                   textStyle: GlobalFonts.ts20px500w(),
-                  labelText: "Dl no",
+                  labelText: "Dlname",
                 ),
                 const SizedBox(
                   height: 15,

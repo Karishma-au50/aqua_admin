@@ -31,10 +31,3 @@ class _WaterQualityScreenState extends State<WaterQualityScreen> {
     );
   }
 }
-
-class ChartData {
-  final DateTime dateTime;
-  final double value;
-
-  ChartData(this.dateTime, this.value);
-}

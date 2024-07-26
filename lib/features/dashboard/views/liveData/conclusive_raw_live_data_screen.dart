@@ -1,5 +1,13 @@
+import 'dart:convert';
+import 'dart:html';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+import 'package:pdf/widgets.dart' as pw;
+// import 'dart:io';
+
 import 'package:admin/model/conclusive_Raw_data_model.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +15,7 @@ import 'package:intl/intl.dart';
 import '../../../../shared/constant/font_helper.dart';
 import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
+import '../../../../shared/widgets/pdf_service.dart';
 import '../../controller/sensor_controller.dart';
 
 class ConclusiveOrRawLiveDataScreen extends StatefulWidget {
@@ -24,11 +33,32 @@ class _ConclusiveOrRawLiveDataScreenState
   TextEditingController typeIdController = TextEditingController();
   TextEditingController dlNoController = TextEditingController();
   TextEditingController networkNoController = TextEditingController();
+
+  TextEditingController countValueController = TextEditingController();
+
   String countValue = "10";
   String typeValue = "ConclusiveData";
   RxList<ConclusiveOrRawDataModel> conclusiveOrRawData =
       <ConclusiveOrRawDataModel>[].obs;
   final _formKey = GlobalKey<FormState>();
+  // create a method to create a file and return a file
+  static Future<void> createFileOfPdfUrl(
+      pw.Document document, String name) async {
+    // final Directory dir = await getTemporaryDirectory();
+    try {
+      final List<int> bytesList = await document.save();
+
+      AnchorElement(
+        href:
+            "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytesList)}",
+      )
+        ..setAttribute("download", "output.pdf")
+        ..click();
+    } catch (ex) {
+      print(ex);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -97,15 +127,13 @@ class _ConclusiveOrRawLiveDataScreenState
               ],
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+
           // dropdowns and submit button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: DropdownFormField(
@@ -123,20 +151,17 @@ class _ConclusiveOrRawLiveDataScreenState
                   width: 22,
                 ),
                 Expanded(
-                  child: DropdownFormField(
+                  child: MyTextField(
+                    controller: countValueController,
                     hintText: "Count",
-                    value: countValue,
-                    dropDownItems: const [
-                      "10",
-                      "20",
-                      "30",
-                      "40",
-                      "50",
-                    ],
-                    onChange: (value) {
-                      setState(() {
-                        countValue = value;
-                      });
+                    textStyle: GlobalFonts.ts20px500w(),
+                    labelText: "Count",
+                    isValidate: true,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "required";
+                      }
+                      return "";
                     },
                   ),
                 ),
@@ -158,7 +183,7 @@ class _ConclusiveOrRawLiveDataScreenState
                             dlNoController.text,
                             networkNoController.text,
                             finalCollectionType.toString(),
-                            countValue,
+                            countValueController.text,
                           )
                               .then((value) {
                             if (value != null) {
@@ -176,7 +201,36 @@ class _ConclusiveOrRawLiveDataScreenState
             ),
           ),
           const SizedBox(
-            height: 14,
+            height: 10,
+          ),
+
+          Obx(() {
+            return !conclusiveOrRawData.isNotEmpty
+                ? SizedBox()
+                : Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: MyButton(
+                          width: 180,
+                          text: "Export PDF",
+                          color: Color(0xFFFFFFF),
+                          textColor: Color(0xFF000000),
+                          onPressed: () =>
+                              PDFService.generate15DaysDataTablePDF(
+                                      conclusiveOrRawData)
+                                  .then((value) async {
+                                String fileName = "testing";
+                                return await createFileOfPdfUrl(
+                                    value, fileName);
+                              }).catchError((e) {
+                                print(e);
+                              })),
+                    ),
+                  );
+          }),
+          const SizedBox(
+            height: 10,
           ),
           // conclusive data table
           Obx(() {
@@ -521,3 +575,124 @@ class _ConclusiveOrRawLiveDataScreenState
     );
   }
 }
+
+// edrftghjkll;
+// Future<void> generatePDF(BuildContext context,
+//     List<ConclusiveOrRawDataModel> conclusiveOrRawData) async {
+//   try {
+//     // Create PDF document
+//     final PdfDocument document = PdfDocument();
+
+//     // Draw top-center text
+//     final PdfPage page = document.pages.add();
+//     final Size pageSize = page.getClientSize();
+
+//     // Assuming we show the details of the first item in the list
+//     final ConclusiveOrRawDataModel firstData = conclusiveOrRawData.isNotEmpty
+//         ? conclusiveOrRawData[0]
+//         : ConclusiveOrRawDataModel();
+
+//     String topCenterText = "Network No: ${firstData.networkNo ?? '-'}, "
+//         "Device ID: ${firstData.dlNo ?? '-'}, "
+//         "Type ID: ${firstData.typeId ?? '-'}";
+//     // 'nmdl live data'
+
+//     page.graphics.drawString(
+//       topCenterText,
+//       PdfStandardFont(PdfFontFamily.helvetica, 12),
+//       bounds: Rect.fromLTWH(0, 20, pageSize.width, 20),
+//       format: PdfStringFormat(
+//         alignment: PdfTextAlignment.center,
+//         lineAlignment: PdfVerticalAlignment.middle,
+//       ),
+//     );
+
+//     // Draw table with actual data
+//     final PdfGrid grid = PdfGrid();
+//     grid.columns.add(count: 8); // Only 7 columns now
+//     grid.headers.add(1);
+
+//     // Add header row
+//     final PdfGridRow headerRow = grid.headers[0];
+//     headerRow.cells[0].value = 'Analog ID';
+//     headerRow.cells[1].value = 'Byte 1';
+//     headerRow.cells[2].value = 'Byte 2';
+//     headerRow.cells[3].value = 'Byte 3';
+//     headerRow.cells[4].value = 'Year';
+//     headerRow.cells[5].value = 'Latitude Time';
+//     headerRow.cells[6].value = 'Voltage Status';
+//     headerRow.cells[7].value = 'Received Time';
+
+//     // Define header style
+//     final PdfGridCellStyle headerStyle = PdfGridCellStyle(
+//       backgroundBrush: PdfBrushes.chocolate, // Color #edf4d6
+//       textBrush: PdfBrushes.black,
+//       font: PdfStandardFont(PdfFontFamily.helvetica, 12,
+//           style: PdfFontStyle.regular),
+//       cellPadding: PdfPaddings(left: 5, top: 5, right: 5, bottom: 5),
+//       borders: PdfBorders(
+//         left: PdfPens.black,
+//         top: PdfPens.black,
+//         right: PdfPens.black,
+//         bottom: PdfPens.black,
+//       ),
+//     );
+
+//     // Apply header style
+//     for (int i = 0; i < headerRow.cells.count; i++) {
+//       headerRow.cells[i].style = headerStyle;
+//     }
+
+//     // Define row style
+//     final PdfGridCellStyle rowStyle = PdfGridCellStyle(
+//       textBrush: PdfBrushes.black,
+//       font: PdfStandardFont(PdfFontFamily.helvetica, 10),
+//       cellPadding: PdfPaddings(left: 5, top: 5, right: 5, bottom: 5),
+//       borders: PdfBorders(
+//         left: PdfPens.black,
+//         top: PdfPens.black,
+//         right: PdfPens.black,
+//         bottom: PdfPens.black,
+//       ),
+//     );
+
+//     // Add rows with actual data
+//     for (var data in conclusiveOrRawData) {
+//       final PdfGridRow row = grid.rows.add();
+//       row.cells[0].value = data.analogId ?? '-';
+//       row.cells[1].value = data.byte1 ?? '-';
+//       row.cells[2].value = data.byte2 ?? '-';
+//       row.cells[3].value = data.byte3 ?? '-';
+//       row.cells[4].value = data.year ?? '-';
+//       row.cells[5].value = data.lTime ?? '-';
+//       row.cells[6].value = data.voltageStatus?.toStringAsFixed(2) ?? '-';
+//       row.cells[7].value = data.receivedTime != null
+//           ? DateFormat('dd MMM yy\nHH:mm:ss')
+//               .format(DateTime.parse(data.receivedTime ?? ''))
+//           : '-';
+
+//       // Apply row style
+//       for (int j = 0; j < row.cells.count; j++) {
+//         row.cells[j].style = rowStyle;
+//       }
+//     }
+
+//     // Draw the grid and let it handle pagination
+//     grid.draw(page: page, bounds: const Rect.fromLTWH(0, 50, 0, 0));
+
+//     // Save PDF and initiate download
+//     final List<int> bytesList = await document.save();
+//     document.dispose();
+
+//     AnchorElement(
+//       href:
+//           "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytesList)}",
+//     )
+//       ..setAttribute("download", "output.pdf")
+//       ..click();
+
+//     MyToasts.toastSuccess("Chart has been exported as PDF document.");
+//   } catch (e) {
+//     MyToasts.toastError("Error exporting chart as PDF document.");
+//   }
+// }
