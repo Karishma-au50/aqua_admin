@@ -1,3 +1,4 @@
+import 'package:admin/model/activeUsers.dart';
 import 'package:admin/model/conclusive_Raw_data_model.dart';
 import 'package:admin/model/farmer_pond_info_model.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -90,6 +91,22 @@ class SensorController extends GetxController {
       }
     } catch (e) {
       MyToasts.toastError(e.toString());
+    }
+  }
+
+  // list of active users
+
+  Future<List<ActiveUsersModel>?> getActiveUsers() async {
+    try {
+      final res = await _api.getActiveUsers();
+      if (!res.error) {
+        return res.result!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
     }
   }
 }

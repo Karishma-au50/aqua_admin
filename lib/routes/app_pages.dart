@@ -1,4 +1,5 @@
 import 'package:admin/features/dashboard/views/WaterQualityGraph/water_quality_screen.dart';
+import 'package:admin/features/dashboard/views/activeUsers/active_users.dart';
 import 'package:admin/features/dashboard/views/sensorCaliberation/sensor_caliberation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -54,6 +55,11 @@ final router = GoRouter(
           name: AppRoutes.conclusiveOrRawLiveData,
           path: AppRoutes.conclusiveOrRawLiveData,
           builder: (context, state) => const ConclusiveOrRawLiveDataScreen(),
+        ),
+        GoRoute(
+          name: AppRoutes.activeUsers,
+          path: AppRoutes.activeUsers,
+          builder: (context, state) => const ActiveUsersScreen(),
         ),
       ],
     ),

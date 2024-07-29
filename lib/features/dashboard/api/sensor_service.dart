@@ -1,3 +1,4 @@
+import 'package:admin/model/activeUsers.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/local_data_helper.dart';
@@ -119,5 +120,26 @@ class SensorService extends BaseApiService {
     );
 
     return ResponseModel.empty().fromJson(res.data);
+  }
+
+  // get active useers..
+  Future<ResponseModel> getActiveUsers() async {
+    String token = await LocalDataHelper.getUserToken();
+
+    var res = await get(
+      '/users/',
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<List<ActiveUsersModel>>(
+      message: res.data["message"],
+      error: res.data["error"],
+      result: res.data["result"]
+          .map<ActiveUsersModel>((e) => ActiveUsersModel.fromMap(e))
+          .toList(),
+    );
+    return resModel;
   }
 }

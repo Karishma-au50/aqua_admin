@@ -1,3 +1,4 @@
+import 'package:admin/features/dashboard/views/activeUsers/active_users.dart';
 import 'package:admin/routes/app_pages.dart';
 import 'package:admin/routes/app_routes.dart';
 import 'package:admin/shared/utils/nav_helper.dart';
@@ -76,6 +77,15 @@ class DashBoardScreen extends StatelessWidget {
                     },
                     title: 'Farm CleanUp',
                   ),
+                  DashboardItem(
+                    ontab: () async {
+                        NavHelper.pushToNamed(AppRoutes.activeUsers);
+                      // showDialog(
+                      //     context: context,
+                      //     builder: (context) => const ActiveUsersScreen());
+                    },
+                    title: 'Active Users',
+                  ),
                 ],
               ),
             ),
@@ -145,6 +155,7 @@ class _SenserCaliberationDialogeState extends State<SenserCaliberationDialoge> {
   TextEditingController deviceID = TextEditingController();
   final SensorController controller =
       Get.isRegistered() ? Get.find() : Get.put(SensorController());
+  
   @override
   Widget build(BuildContext context) {
     return SizedBox(
