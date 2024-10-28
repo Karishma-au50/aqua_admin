@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:admin/model/waterquality/water_qualiity_chart_model.dart';
 import 'package:admin/shared/constant/global_variables.dart';
+import 'package:admin/shared/utils/extensions.dart';
 import 'package:admin/shared/widgets/buttons/my_button.dart';
 import 'package:admin/shared/widgets/toast/my_toast.dart';
 
@@ -108,8 +109,28 @@ class _LineChartState extends State<LineChart> {
                     Expanded(
                       child: SfCartesianChart(
                         key: _chartKey,
-                        // key: ValueKey(showAreaSeries),
                         primaryXAxis: DateTimeAxis(
+                          plotBands: List.generate(
+                              controller.valueParameterModel.endDate!
+                                      .difference(controller
+                                          .valueParameterModel.startDate!)
+                                      .inDays +
+                                  1,
+                              (index) => controller
+                                  .valueParameterModel.startDate!
+                                  .add(Duration(days: index))).map((e) {
+                            return PlotBand(
+                                start: e
+                                    .addDate(-1)
+                                    .copyWith(hour: 20, minute: 0, second: 0),
+                                end: e.copyWith(hour: 8, minute: 0, second: 0),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black.withOpacity(0.3),
+                                    Colors.black.withOpacity(0.2),
+                                  ],
+                                ));
+                          }).toList(),
                           majorGridLines: const MajorGridLines(width: 0),
                           edgeLabelPlacement: EdgeLabelPlacement.shift,
                           intervalType: DateTimeIntervalType.auto,
@@ -118,17 +139,20 @@ class _LineChartState extends State<LineChart> {
                         primaryYAxis: NumericAxis(
                           name: 'PrimaryYAxis',
                           title: AxisTitle(
-                              text:
-                                  '${controller.waterQualityChartModel.first.sensor} Value'),
+                            text:
+                                '${controller.waterQualityChartModel.first.sensor} Value',
+                          ),
                         ),
                         axes: controller.valueParameterModel.isComb
                             ? [
                                 NumericAxis(
-                                    name: 'SecondaryYAxis',
-                                    opposedPosition: true,
-                                    title: AxisTitle(
-                                        text:
-                                            '${controller.waterQualityChartModel.last.sensor}  Value')),
+                                  name: 'SecondaryYAxis',
+                                  opposedPosition: true,
+                                  title: AxisTitle(
+                                    text:
+                                        '${controller.waterQualityChartModel.last.sensor} Value',
+                                  ),
+                                ),
                               ]
                             : [],
                         series: showAreaSeries
@@ -145,10 +169,11 @@ class _LineChartState extends State<LineChart> {
                           ),
                         ),
                         legend: const Legend(
-                            isVisible: true,
-                            position: LegendPosition.top,
-                            overflowMode: LegendItemOverflowMode.wrap,
-                            alignment: ChartAlignment.center),
+                          isVisible: true,
+                          position: LegendPosition.top,
+                          overflowMode: LegendItemOverflowMode.wrap,
+                          alignment: ChartAlignment.center,
+                        ),
                       ),
                     ),
                   ],
@@ -573,5 +598,4 @@ class _LineChartState extends State<LineChart> {
       MyToasts.toastError("Error exporting chart as PDF document.");
     }
   }
-
 }
