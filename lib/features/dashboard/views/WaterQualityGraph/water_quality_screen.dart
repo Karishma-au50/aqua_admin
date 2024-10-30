@@ -40,6 +40,7 @@ class _WaterQualityScreenState extends State<WaterQualityScreen> {
                     SizedBox(
                       height: 800,
                       child: TabBarView(
+                        physics: NeverScrollableScrollPhysics(),
                         children: [
                           LineChart(),
                           DifferenceChart(),

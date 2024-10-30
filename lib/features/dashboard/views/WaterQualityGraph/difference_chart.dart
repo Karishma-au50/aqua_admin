@@ -98,64 +98,47 @@ class _DifferenceChartState extends State<DifferenceChart> {
         const SizedBox(
           height: 20,
         ),
-        SizedBox(
-          height: 40,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemCount: controller.valueParameterModel.endDate!
-                      .difference(controller.valueParameterModel.startDate!)
-                      .inDays +
-                  1,
-              itemBuilder: (context, index) {
-                DateTime e = controller.valueParameterModel.startDate!
-                    .add(Duration(days: index));
-
-                return InkWell(
-                  onTap: () {
-                    DateTime nextDay = DateTime(e.year, e.month, e.day + 1);
-                    _changedate(e);
-                  },
-                  onLongPress: () {
-                    _selectedIndexes.length > 1
+        Wrap(
+          children: _viewDates.map((e) {
+            return InkWell(
+              onTap: () {
+                _changedate(e);
+              },
+              onLongPress: () {
+                _selectedIndexes.length > 1
+                    ? null
+                    : _changedate(e, isMultipleDatesSelected: true);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: Colors.transparent,
+                    ),
+                    color: selectedDates.contains(e) ? greenColor : null,
+                    gradient: selectedDates.contains(e)
                         ? null
-                        : _changedate(e, isMultipleDatesSelected: true);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: Colors.transparent,
-                        ),
-                        color: selectedDates.contains(e) ? greenColor : null,
-                        gradient: selectedDates.contains(e)
-                            ? null
-                            : const LinearGradient(
-                                colors: [
-                                  Color(0xFFACCEC4),
-                                  Color(0xFFDEFFF6),
-                                ],
-                              ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          DateFormat("dd").format(e),
-                          style: GlobalFonts.ts14px600w
-                              .copyWith(color: Colors.white),
-                        ),
-                      ),
+                        : const LinearGradient(
+                            colors: [
+                              Color(0xFFACCEC4),
+                              Color(0xFFDEFFF6),
+                            ],
+                          ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      DateFormat("dd").format(e),
+                      style: GlobalFonts.ts14px600w.copyWith(color: Colors.white),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
@@ -236,6 +219,12 @@ class _DifferenceChartState extends State<DifferenceChart> {
                           overflowMode: LegendItemOverflowMode.wrap,
                           alignment: ChartAlignment.center,
                         ),
+                        zoomPanBehavior: ZoomPanBehavior(
+                          enablePanning: true,
+                          enablePinching: true,
+                          enableDoubleTapZooming: true,
+                          enableSelectionZooming: true,
+                        ),
                       ),
                     ),
                   ],
@@ -244,6 +233,66 @@ class _DifferenceChartState extends State<DifferenceChart> {
             }),
           ),
         ),
+        Obx(() {
+          if (controller.waterQualityChartModel.isNotEmpty) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F5F7),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    '5 mins',
+                    '10 mins',
+                    '15 mins',
+                    '30 mins',
+                    '45 mins',
+                    '60 mins'
+                  ].map((item) {
+                    bool isSelected = item == selectedFrequency;
+                    return AnimatedContainer(
+                      duration: const Duration(seconds: 500),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6.0, vertical: 6),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                          backgroundColor:
+                              isSelected ? greenColor : Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            selectedFrequency = item;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xff767B84),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox();
+          }
+        }),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           width: double.maxFinite,
@@ -252,18 +301,16 @@ class _DifferenceChartState extends State<DifferenceChart> {
             children: controller.valueParameterModel.ponds!.map((e) {
               return FilterChip(
                 label: Text(
-                  e.name.toString(),
-                  style: const TextStyle(
-                    color: Colors.black,
+                  "${e.name} (${e.pondId})",
+                  style: TextStyle(
+                    color: _selectedIndexes.contains(e.pondId) ? Colors.white : Colors.black,
                     fontSize: 16,
                   ),
                 ),
                 selected: _selectedIndexes.contains(e.pondId),
                 checkmarkColor: Colors.transparent,
                 showCheckmark: false,
-                selectedColor: (_selectedIndexes.contains(e.pondId))
-                    ? legendColors[_selectedIndexes.indexOf(e.pondId!)]
-                    : Colors.black,
+                selectedColor:greenColor,
                 onSelected: (bool selected) {
                   setState(() {
                     if (selected) {
@@ -405,72 +452,4 @@ class _DifferenceChartState extends State<DifferenceChart> {
         .whereType<LineSeries<SensorChartModel, DateTime>>()
         .toList();
   }
-
-  // List<LineSeries<SensorChartModel, DateTime>> _buildLineSeries() {
-  //   List<Color> colors = [
-  //     Colors.orange,
-  //     Colors.green,
-  //     Colors.blue,
-  //     Colors.red,
-  //     Colors.purple,
-  //     Colors.cyan
-  //   ];
-
-  //   final chartData = controller.waterQualityChartModel
-  //       .where((p0) => _selectedIndexes.contains(p0.pondId));
-
-  //   if (selectedDates.length > 1) {
-  //     List<LineSeries<SensorChartModel, DateTime>> listData = [];
-  //     int colorIndex = 0;
-
-  //     for (DateTime date in selectedDates) {
-  //       final data = chartData.first.data
-  //           .where((p0) => date == p0.dateTime.removeTime())
-  //           .map((e) {
-  //         DateTime tempDate = e.dateTime.copyWith(year: 2023, month: 1, day: 1);
-  //         return e.copyWith(derivedTime: tempDate.millisecondsSinceEpoch);
-  //       }).toList();
-
-  //       listData.add(LineSeries<SensorChartModel, DateTime>(
-  //         dataSource: _filterDataByFrequency(data),
-  //         xValueMapper: (data, _) => data.dateTime,
-  //         yValueMapper: (data, _) => data.value,
-  //         markerSettings: const MarkerSettings(isVisible: false),
-  //         color: colors[colorIndex %
-  //             colors.length], // Use colorIndex for different colors
-  //         name: "${chartData.first.sensor} (${chartData.first.pondId})",
-  //         emptyPointSettings: const EmptyPointSettings(
-  //           mode: EmptyPointMode.gap,
-  //           color: Color.fromRGBO(0, 0, 0, 0),
-  //           borderColor: Colors.transparent,
-  //         ),
-  //       ));
-
-  //       colorIndex++; // Increment color index for the next series
-  //     }
-  //     return listData;
-  //   }
-
-  //   return chartData.map((element) {
-  //     final data = element.data
-  //         .where((p0) => selectedDates.contains(p0.dateTime.removeTime()))
-  //         .toList();
-  //     int elementIndex = controller.waterQualityChartModel.indexOf(element);
-
-  //     return LineSeries<SensorChartModel, DateTime>(
-  //       dataSource: _filterDataByFrequency(data),
-  //       xValueMapper: (data, _) => data.dateTime,
-  //       yValueMapper: (data, _) => data.value,
-  //       markerSettings: const MarkerSettings(isVisible: false),
-  //       color: colors[elementIndex %
-  //           colors.length], // Use elementIndex for color selection
-  //       name: "${element.sensor} (${element.pondId})",
-  //       emptyPointSettings: const EmptyPointSettings(
-  //         mode: EmptyPointMode.gap,
-  //         color: Color.fromRGBO(0, 0, 0, 0),
-  //         borderColor: Colors.transparent,
-  //       ),
-  //     );
-  //   }).toList();
-  // }
 }
