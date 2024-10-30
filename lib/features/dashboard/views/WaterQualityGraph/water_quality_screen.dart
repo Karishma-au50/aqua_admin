@@ -17,7 +17,6 @@ class _WaterQualityScreenState extends State<WaterQualityScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-        body: Scaffold(
       body: SingleChildScrollView(
         child: DefaultTabController(
           length: 2,
@@ -39,7 +38,7 @@ class _WaterQualityScreenState extends State<WaterQualityScreen> {
                       ],
                     ),
                     SizedBox(
-                      height: 400,
+                      height: 800,
                       child: TabBarView(
                         children: [
                           LineChart(),
@@ -54,23 +53,6 @@ class _WaterQualityScreenState extends State<WaterQualityScreen> {
           ),
         ),
       ),
-    )
-        //  SingleChildScrollView(
-        //   child: Padding(
-        //     padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6),
-        //     child: Column(
-        //       children: [
-        //         ValueParameter(),
-        //         SizedBox(
-        //           height: 20,
-        //         ),
-
-        //         LineChart(),
-        //       ],
-        //     ),
-        //   ),
-        // ),
-
-        );
+    );
   }
 }

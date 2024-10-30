@@ -110,27 +110,27 @@ class _LineChartState extends State<LineChart> {
                       child: SfCartesianChart(
                         key: _chartKey,
                         primaryXAxis: DateTimeAxis(
-                          plotBands: List.generate(
-                              controller.valueParameterModel.endDate!
-                                      .difference(controller
-                                          .valueParameterModel.startDate!)
-                                      .inDays +
-                                  1,
-                              (index) => controller
-                                  .valueParameterModel.startDate!
-                                  .add(Duration(days: index))).map((e) {
-                            return PlotBand(
-                                start: e
-                                    .addDate(-1)
-                                    .copyWith(hour: 20, minute: 0, second: 0),
-                                end: e.copyWith(hour: 8, minute: 0, second: 0),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.black.withOpacity(0.3),
-                                    Colors.black.withOpacity(0.2),
-                                  ],
-                                ));
-                          }).toList(),
+                          // plotBands: List.generate(
+                          //     controller.valueParameterModel.endDate!
+                          //             .difference(controller
+                          //                 .valueParameterModel.startDate!)
+                          //             .inDays +
+                          //         1,
+                          //     (index) => controller
+                          //         .valueParameterModel.startDate!
+                          //         .add(Duration(days: index))).map((e) {
+                          //   return PlotBand(
+                          //       start: e
+                          //           .addDate(-1)
+                          //           .copyWith(hour: 20, minute: 0, second: 0),
+                          //       end: e.copyWith(hour: 8, minute: 0, second: 0),
+                          //       gradient: LinearGradient(
+                          //         colors: [
+                          //           Colors.black.withOpacity(0.3),
+                          //           Colors.black.withOpacity(0.2),
+                          //         ],
+                          //       ));
+                          // }).toList(),
                           majorGridLines: const MajorGridLines(width: 0),
                           edgeLabelPlacement: EdgeLabelPlacement.shift,
                           intervalType: DateTimeIntervalType.auto,
