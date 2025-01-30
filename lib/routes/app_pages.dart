@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/local_data_helper.dart';
 import '../features/auth/views/login_screen.dart';
+import '../features/dashboard/views/CloudManagement/cloud_management_screen.dart';
 import '../features/dashboard/views/dashboardScreen/dashboard_screen.dart';
 import '../features/dashboard/views/liveData/conclusive_raw_live_data_screen.dart';
 import '../main_screen.dart';
@@ -34,7 +35,7 @@ final router = GoRouter(
         if (await LocalDataHelper.getUserToken() == "") {
           return AppRoutes.login;
         }
-        // return state.fullPath;
+        return null;
       },
       routes: [
         GoRoute(
@@ -60,6 +61,11 @@ final router = GoRouter(
           name: AppRoutes.activeUsers,
           path: AppRoutes.activeUsers,
           builder: (context, state) => const ActiveUsersScreen(),
+        ),
+        GoRoute(
+          name: AppRoutes.cloudManagement,
+          path: AppRoutes.cloudManagement,
+          builder: (context, state) => const CloudManagementScreen(),
         ),
       ],
     ),

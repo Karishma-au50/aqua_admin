@@ -5,4 +5,5 @@ class AppRoutes {
   static const String conclusiveOrRawLiveData = '/conclusiveOrRawLiveData';
   static const String waterQuality = '/waterQuality';
   static const String activeUsers = '/activeUsers';
+  static const String cloudManagement = '/cloudManagement';
 }

@@ -132,7 +132,8 @@ class _DifferenceChartState extends State<DifferenceChart> {
                   child: Center(
                     child: Text(
                       DateFormat("dd").format(e),
-                      style: GlobalFonts.ts14px600w.copyWith(color: Colors.white),
+                      style:
+                          GlobalFonts.ts14px600w.copyWith(color: Colors.white),
                     ),
                   ),
                 ),
@@ -303,14 +304,16 @@ class _DifferenceChartState extends State<DifferenceChart> {
                 label: Text(
                   "${e.name} (${e.pondId})",
                   style: TextStyle(
-                    color: _selectedIndexes.contains(e.pondId) ? Colors.white : Colors.black,
+                    color: _selectedIndexes.contains(e.pondId)
+                        ? Colors.white
+                        : Colors.black,
                     fontSize: 16,
                   ),
                 ),
                 selected: _selectedIndexes.contains(e.pondId),
                 checkmarkColor: Colors.transparent,
                 showCheckmark: false,
-                selectedColor:greenColor,
+                selectedColor: greenColor,
                 onSelected: (bool selected) {
                   setState(() {
                     if (selected) {

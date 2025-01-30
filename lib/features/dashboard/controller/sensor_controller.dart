@@ -5,6 +5,7 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../../core/exceptions/custom_exceptions.dart';
 import '../../../model/calibration_values.dart';
+import '../../../model/cloud_management_model.dart';
 import '../../../shared/widgets/toast/my_toast.dart';
 import '../api/sensor_service.dart';
 
@@ -107,6 +108,52 @@ class SensorController extends GetxController {
     } catch (e) {
       MyToasts.toastError(e.toString());
       return null;
+    }
+  }
+
+  Future<bool> deleteUserById(String id) async {
+    try {
+      final res = await _api.deleteUserById(id);
+      if (!res.error) {
+        MyToasts.toastSuccess(res.message ?? "Success");
+        return true;
+      } else {
+        MyToasts.toastError(res.message ?? "Error");
+        return false;
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return false;
+    }
+  }
+
+  Future<List<CloudManagementModel>?> getCloudManagementList() async {
+    try {
+      final res = await _api.getCloudManagementList();
+      if (!res.error) {
+        return res.result!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
+    }
+  }
+
+  Future<bool> refreshCloud(String id) async {
+    try {
+      final res = await _api.refreshCloud(id);
+      if (!res.error) {
+        MyToasts.toastSuccess(res.message ?? "Success");
+        return true;
+      } else {
+        MyToasts.toastError(res.message ?? "Error");
+        return false;
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return false;
     }
   }
 }

@@ -1,5 +1,3 @@
-import 'package:admin/features/dashboard/views/activeUsers/active_users.dart';
-import 'package:admin/routes/app_pages.dart';
 import 'package:admin/routes/app_routes.dart';
 import 'package:admin/shared/utils/nav_helper.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,6 @@ import '../../../../shared/constant/global_variables.dart';
 import '../../../../shared/widgets/buttons/my_button.dart';
 import '../../../../shared/widgets/inputs/my_text_field.dart';
 import '../../controller/sensor_controller.dart';
-import '../sensorCaliberation/sensor_caliberation_screen.dart';
 
 class DashBoardScreen extends StatelessWidget {
   const DashBoardScreen({
@@ -79,12 +76,15 @@ class DashBoardScreen extends StatelessWidget {
                   ),
                   DashboardItem(
                     ontab: () async {
-                        NavHelper.pushToNamed(AppRoutes.activeUsers);
-                      // showDialog(
-                      //     context: context,
-                      //     builder: (context) => const ActiveUsersScreen());
+                      NavHelper.pushToNamed(AppRoutes.activeUsers);
                     },
                     title: 'Active Users',
+                  ),
+                  DashboardItem(
+                    ontab: () async {
+                      NavHelper.pushToNamed(AppRoutes.cloudManagement);
+                    },
+                    title: 'Cloud  Management',
                   ),
                 ],
               ),
@@ -155,7 +155,7 @@ class _SenserCaliberationDialogeState extends State<SenserCaliberationDialoge> {
   TextEditingController deviceID = TextEditingController();
   final SensorController controller =
       Get.isRegistered() ? Get.find() : Get.put(SensorController());
-  
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(

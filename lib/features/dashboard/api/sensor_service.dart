@@ -5,6 +5,7 @@ import '../../../core/local_data_helper.dart';
 import '../../../core/model/response_model.dart';
 import '../../../core/network/base_api_service.dart';
 import '../../../model/calibration_values.dart';
+import '../../../model/cloud_management_model.dart';
 import '../../../model/conclusive_Raw_data_model.dart';
 import '../../../model/farmer_pond_info_model.dart';
 
@@ -141,5 +142,53 @@ class SensorService extends BaseApiService {
           .toList(),
     );
     return resModel;
+  }
+
+  Future<ResponseModel> deleteUserById(
+    String id,
+  ) async {
+    String token = await LocalDataHelper.getUserToken();
+    final res = await delete(
+      "/users/$id",
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    return ResponseModel.empty().fromJson(res.data);
+  }
+
+  Future<ResponseModel> getCloudManagementList() async {
+    String token = await LocalDataHelper.getUserToken();
+
+    var res = await get(
+      '/admin/managegateway',
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<List<CloudManagementModel>>(
+      message: res.data["message"],
+      error: res.data["error"],
+      result: res.data["result"]
+          .map<CloudManagementModel>((e) => CloudManagementModel.fromMap(e))
+          .toList(),
+    );
+    return resModel;
+  }
+
+  Future<ResponseModel> refreshCloud(
+    String id,
+  ) async {
+    String token = await LocalDataHelper.getUserToken();
+    final res = await put(
+      "/admin/managegateway/$id",
+      options: Options(
+        headers: {"authorization": token},
+      ),
+    );
+
+    return ResponseModel.empty().fromJson(res.data);
   }
 }
