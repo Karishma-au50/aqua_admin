@@ -21,6 +21,7 @@ class WaterQualityController extends GetxController {
     try {
       final res = await _api.getfarmerpondinfo();
       if (!res.error) {
+        print(res.result?.farms);
         return farmerPondInfoModel = res.result!;
       } else {
         MyToasts.toastError(res.message ?? "Error");

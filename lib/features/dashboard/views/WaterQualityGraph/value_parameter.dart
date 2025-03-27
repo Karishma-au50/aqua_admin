@@ -24,6 +24,7 @@ class ValueParameter extends StatefulWidget {
 
 class _ValueParameterState extends State<ValueParameter> {
   final _formKey = GlobalKey<FormState>();
+  bool isLoad = false;
   final TextEditingController _pondIdController = TextEditingController();
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
@@ -111,11 +112,20 @@ class _ValueParameterState extends State<ValueParameter> {
 
   @override
   void initState() {
-    controller.getfarmerpondinfo().then((value) {
-      if (value != null) {
-        farmerPondInfo = value;
-      }
-    });
+    try {
+      isLoad = true;
+      print("init state");
+      controller.getfarmerpondinfo().then((value) {
+        if (value != null) {
+          print(value.toJson());
+          farmerPondInfo = value;
+        }
+        isLoad = false;
+        setState(() {});
+      });
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+    }
 
     super.initState();
   }
@@ -131,622 +141,667 @@ class _ValueParameterState extends State<ValueParameter> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 9),
-      child: Form(
-        key: _formKey,
-        child: LayoutBuilder(builder: (context, constraints) {
-          bool isMobile = constraints.maxWidth < 600;
-          return Column(
-            children: [
-              Container(
-                height: isMobile ? null : context.height * 0.12,
-                decoration: BoxDecoration(
-                  color: Colors.white, // Add background color if needed
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 3,
-                      offset:
-                          const Offset(0, 0.5), // changes position of shadow
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(
-                      10), // Adjust border radius as needed
-                ),
-                child: isMobile
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            // width: 80,
-                            decoration: const BoxDecoration(
-                              color: greenColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                topRight: Radius.circular(10.0),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "WHERE?",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
+    return isLoad
+        ? const Center(child: CircularProgressIndicator())
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 9),
+            child: Form(
+              key: _formKey,
+              child: LayoutBuilder(builder: (context, constraints) {
+                bool isMobile = constraints.maxWidth < 600;
+                return Column(
+                  children: [
+                    Container(
+                      height: isMobile ? null : context.height * 0.12,
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Add background color if needed
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: const Offset(
+                                0, 0.5), // changes position of shadow
                           ),
-                          TypeAheadField<FarmModel>(
-                            controller: _farmController,
-                            decorationBuilder: (context, child) {
-                              return Material(
-                                type: MaterialType.card,
-                                elevation: 4,
-                                borderRadius: BorderRadius.circular(8),
-                                child: child,
-                              );
-                            },
-                            offset: const Offset(0, 12),
-                            constraints: const BoxConstraints(maxHeight: 300),
-                            builder: (context, controller, focusNode) {
-                              return Obx(() {
-                                return MyTextField(
-                                  controller: controller,
-                                  hintText: selectedFarms.isEmpty
-                                      ? "Select Farm"
-                                      : selectedFarms
-                                          .map((e) => "${e.name} (${e.farmId})")
-                                          .join(', '),
-                                  focusNode: focusNode,
-                                  labelText: "FARMS",
-                                );
-                              });
-                            },
-                            onSelected: (value) {},
-                            suggestionsCallback: (search) {
-                              return farmerPondInfo.farms!
-                                  .where((ele) =>
-                                      ele.name.contains(search) ||
-                                      ele.farmId.toString().contains(search))
-                                  .toList();
-                            },
-                            itemBuilder: (context, suggestion) {
-                              return Container(
-                                decoration:
-                                    const BoxDecoration(color: Colors.white),
-                                child: CheckboxListTile(
-                                  title: Text(
-                                      "${suggestion.name} (${suggestion.farmId})"),
-                                  value: selectedFarms.contains(suggestion),
-                                  onChanged: (bool? selected) {
-                                    setState(() {
-                                      if (selected == true &&
-                                          !selectedFarms.contains(suggestion)) {
-                                        selectedFarms.add(suggestion);
-                                      } else if (selected == false &&
-                                          selectedFarms.contains(suggestion)) {
-                                        selectedFarms.remove(suggestion);
-                                      }
-                                      filteredPonds.clear();
-                                      filteredPonds.value = farmerPondInfo
-                                          .ponds!
-                                          .where((element) => selectedFarms
-                                              .map((e) => e.farmId)
-                                              .contains(element.farmId))
-                                          .toList();
-                                      _pondSuggestionsController.suggestions =
-                                          filteredPonds;
-                                      _farmController.clear();
-                                    });
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                          TypeAheadField<PondModel>(
-                            controller: _pondController,
-                            suggestionsController: _pondSuggestionsController,
-                            constraints: const BoxConstraints(maxHeight: 300),
-                            builder: (context, controller, focusNode) {
-                              return MyTextField(
-                                controller: controller,
-                                hintText: selectedPonds.isEmpty
-                                    ? "Select Pond"
-                                    : selectedPonds
-                                        .map((e) => "${e.name} (${e.pondId})")
-                                        .join(', '),
-                                focusNode: focusNode,
-                                labelText: "PONDS",
-                              );
-                            },
-                            onSelected: (value) {},
-                            suggestionsCallback: (search) {
-                              return filteredPonds.isEmpty
-                                  ? null
-                                  : filteredPonds
-                                      .where((ele) =>
-                                          (ele.name!.toLowerCase().contains(
-                                                  search.toLowerCase()) ||
-                                              ele.pondId
-                                                  .toString()
-                                                  .toLowerCase()
-                                                  .contains(
-                                                      search.toLowerCase())) &&
-                                          selectedFarms.any((element) =>
-                                              element.farmId == ele.farmId))
-                                      .toList();
-                            },
-                            itemBuilder: (context, suggestion) {
-                              return Container(
-                                decoration:
-                                    const BoxDecoration(color: Colors.white),
-                                child: CheckboxListTile(
-                                  title: Text(
-                                    "${suggestion.name} (${suggestion.pondId})",
-                                    style: TextStyle(
-                                      color: suggestion.isDeleted == true
-                                          ? Colors.red
-                                          : Colors.black,
+                        ],
+                        borderRadius: BorderRadius.circular(
+                            10), // Adjust border radius as needed
+                      ),
+                      child: isMobile
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  // width: 80,
+                                  decoration: const BoxDecoration(
+                                    color: greenColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      topRight: Radius.circular(10.0),
                                     ),
                                   ),
-                                  value: selectedPonds.contains(suggestion),
-                                  onChanged: (bool? selected) {
-                                    setState(() {
-                                      if (selected == true &&
-                                          !selectedPonds.contains(suggestion)) {
-                                        selectedPonds.add(suggestion);
-                                      } else if (selected == false &&
-                                          selectedPonds.contains(suggestion)) {
-                                        selectedPonds.remove(suggestion);
-                                      }
-                                      _pondController.clear();
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        "WHERE?",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TypeAheadField<FarmModel>(
+                                  controller: _farmController,
+                                  decorationBuilder: (context, child) {
+                                    return Material(
+                                      type: MaterialType.card,
+                                      elevation: 4,
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: child,
+                                    );
+                                  },
+                                  offset: const Offset(0, 12),
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 300),
+                                  builder: (context, controller, focusNode) {
+                                    return Obx(() {
+                                      return MyTextField(
+                                        controller: controller,
+                                        hintText: selectedFarms.isEmpty
+                                            ? "Select Farm"
+                                            : selectedFarms
+                                                .map((e) =>
+                                                    "${e.name} (${e.farmId})")
+                                                .join(', '),
+                                        focusNode: focusNode,
+                                        labelText: "FARMS",
+                                      );
                                     });
                                   },
+                                  onSelected: (value) {},
+                                  suggestionsCallback: (search) {
+                                    print(farmerPondInfo.farms);
+                                    return farmerPondInfo.farms!
+                                        .where((ele) =>
+                                            ele.name.contains(search) ||
+                                            ele.farmId
+                                                .toString()
+                                                .contains(search))
+                                        .toList();
+                                  },
+                                  itemBuilder: (context, suggestion) {
+                                    return Container(
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white),
+                                      child: CheckboxListTile(
+                                        title: Text(
+                                            "${suggestion.name} (${suggestion.farmId})"),
+                                        value:
+                                            selectedFarms.contains(suggestion),
+                                        onChanged: (bool? selected) {
+                                          setState(() {
+                                            if (selected == true &&
+                                                !selectedFarms
+                                                    .contains(suggestion)) {
+                                              selectedFarms.add(suggestion);
+                                            } else if (selected == false &&
+                                                selectedFarms
+                                                    .contains(suggestion)) {
+                                              selectedFarms.remove(suggestion);
+                                            }
+                                            filteredPonds.clear();
+                                            filteredPonds.value = farmerPondInfo
+                                                .ponds!
+                                                .where((element) =>
+                                                    selectedFarms
+                                                        .map((e) => e.farmId)
+                                                        .contains(
+                                                            element.farmId))
+                                                .toList();
+                                            _pondSuggestionsController
+                                                .suggestions = filteredPonds;
+                                            _farmController.clear();
+                                          });
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          )
-                        ],
-                      )
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 80,
-                            decoration: const BoxDecoration(
-                              color: greenColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                bottomLeft: Radius.circular(10.0),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "WHERE?",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: TypeAheadField<FarmModel>(
-                              controller: _farmController,
-                              decorationBuilder: (context, child) {
-                                return Material(
-                                  type: MaterialType.card,
-                                  elevation: 4,
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: child,
-                                );
-                              },
-                              offset: const Offset(0, 12),
-                              constraints: const BoxConstraints(maxHeight: 300),
-                              builder: (context, controller, focusNode) {
-                                return Obx(() {
-                                  return MyTextField(
-                                    controller: controller,
-                                    hintText: selectedFarms.isEmpty
-                                        ? "Select Farm"
-                                        : selectedFarms
-                                            .map((e) =>
-                                                "${e.name} (${e.farmId})")
-                                            .join(', '),
-                                    focusNode: focusNode,
-                                    labelText: "FARMS",
-                                  );
-                                });
-                              },
-                              onSelected: (value) {},
-                              suggestionsCallback: (search) {
-                                return farmerPondInfo.farms!
-                                    .where((ele) =>
-                                        ele.name.contains(search) ||
-                                        ele.farmId.toString().contains(search))
-                                    .toList();
-                              },
-                              itemBuilder: (context, suggestion) {
-                                return Container(
-                                  decoration:
-                                      const BoxDecoration(color: Colors.white),
-                                  child: CheckboxListTile(
-                                    title: Text(
-                                        "${suggestion.name} (${suggestion.farmId})"),
-                                    value: selectedFarms.contains(suggestion),
-                                    onChanged: (bool? selected) {
-                                      setState(() {
-                                        if (selected == true &&
-                                            !selectedFarms
-                                                .contains(suggestion)) {
-                                          selectedFarms.add(suggestion);
-                                        } else if (selected == false &&
-                                            selectedFarms
-                                                .contains(suggestion)) {
-                                          selectedFarms.remove(suggestion);
-                                        }
-                                        filteredPonds.clear();
-                                        filteredPonds.value = farmerPondInfo
-                                            .ponds!
-                                            .where((element) => selectedFarms
-                                                .map((e) => e.farmId)
-                                                .contains(element.farmId))
+                                TypeAheadField<PondModel>(
+                                  controller: _pondController,
+                                  suggestionsController:
+                                      _pondSuggestionsController,
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 300),
+                                  builder: (context, controller, focusNode) {
+                                    return MyTextField(
+                                      controller: controller,
+                                      hintText: selectedPonds.isEmpty
+                                          ? "Select Pond"
+                                          : selectedPonds
+                                              .map((e) =>
+                                                  "${e.name} (${e.pondId})")
+                                              .join(', '),
+                                      focusNode: focusNode,
+                                      labelText: "PONDS",
+                                    );
+                                  },
+                                  onSelected: (value) {},
+                                  suggestionsCallback: (search) {
+                                    return filteredPonds.isEmpty
+                                        ? null
+                                        : filteredPonds
+                                            .where((ele) =>
+                                                (ele.name!
+                                                        .toLowerCase()
+                                                        .contains(search
+                                                            .toLowerCase()) ||
+                                                    ele.pondId
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .contains(search
+                                                            .toLowerCase())) &&
+                                                selectedFarms.any((element) =>
+                                                    element.farmId ==
+                                                    ele.farmId))
                                             .toList();
-                                        _pondSuggestionsController.suggestions =
-                                            filteredPonds;
-                                        _farmController.clear();
+                                  },
+                                  itemBuilder: (context, suggestion) {
+                                    return Container(
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white),
+                                      child: CheckboxListTile(
+                                        title: Text(
+                                          "${suggestion.name} (${suggestion.pondId})",
+                                          style: TextStyle(
+                                            color: suggestion.isDeleted == true
+                                                ? Colors.red
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                        value:
+                                            selectedPonds.contains(suggestion),
+                                        onChanged: (bool? selected) {
+                                          setState(() {
+                                            if (selected == true &&
+                                                !selectedPonds
+                                                    .contains(suggestion)) {
+                                              selectedPonds.add(suggestion);
+                                            } else if (selected == false &&
+                                                selectedPonds
+                                                    .contains(suggestion)) {
+                                              selectedPonds.remove(suggestion);
+                                            }
+                                            _pondController.clear();
+                                          });
+                                        },
+                                      ),
+                                    );
+                                  },
+                                )
+                              ],
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 80,
+                                  decoration: const BoxDecoration(
+                                    color: greenColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      bottomLeft: Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        "WHERE?",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TypeAheadField<FarmModel>(
+                                    controller: _farmController,
+                                    decorationBuilder: (context, child) {
+                                      return Material(
+                                        type: MaterialType.card,
+                                        elevation: 4,
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: child,
+                                      );
+                                    },
+                                    offset: const Offset(0, 12),
+                                    constraints:
+                                        const BoxConstraints(maxHeight: 300),
+                                    builder: (context, controller, focusNode) {
+                                      return Obx(() {
+                                        return MyTextField(
+                                          controller: controller,
+                                          hintText: selectedFarms.isEmpty
+                                              ? "Select Farm"
+                                              : selectedFarms
+                                                  .map((e) =>
+                                                      "${e.name} (${e.farmId})")
+                                                  .join(', '),
+                                          focusNode: focusNode,
+                                          labelText: "FARMS",
+                                        );
                                       });
                                     },
+                                    onSelected: (value) {},
+                                    suggestionsCallback: (search) {
+                                      print(farmerPondInfo.farms);
+                                      return farmerPondInfo.farms
+                                              ?.where((ele) =>
+                                                  ele.name.contains(search) ||
+                                                  ele.farmId
+                                                      .toString()
+                                                      .contains(search))
+                                              .toList() ??
+                                          [];
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return Container(
+                                        decoration: const BoxDecoration(
+                                            color: Colors.white),
+                                        child: CheckboxListTile(
+                                          title: Text(
+                                              "${suggestion.name} (${suggestion.farmId})"),
+                                          value: selectedFarms
+                                              .contains(suggestion),
+                                          onChanged: (bool? selected) {
+                                            setState(() {
+                                              if (selected == true &&
+                                                  !selectedFarms
+                                                      .contains(suggestion)) {
+                                                selectedFarms.add(suggestion);
+                                              } else if (selected == false &&
+                                                  selectedFarms
+                                                      .contains(suggestion)) {
+                                                selectedFarms
+                                                    .remove(suggestion);
+                                              }
+                                              filteredPonds.clear();
+                                              filteredPonds.value =
+                                                  farmerPondInfo.ponds!
+                                                      .where((element) =>
+                                                          selectedFarms
+                                                              .map((e) =>
+                                                                  e.farmId)
+                                                              .contains(element
+                                                                  .farmId))
+                                                      .toList();
+                                              _pondSuggestionsController
+                                                  .suggestions = filteredPonds;
+                                              _farmController.clear();
+                                            });
+                                          },
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
-                              },
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                    child: TypeAheadField<PondModel>(
+                                  controller: _pondController,
+                                  suggestionsController:
+                                      _pondSuggestionsController,
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 300),
+                                  builder: (context, controller, focusNode) {
+                                    return MyTextField(
+                                      controller: controller,
+                                      hintText: selectedPonds.isEmpty
+                                          ? "Select Pond"
+                                          : selectedPonds
+                                              .map((e) =>
+                                                  "${e.name} (${e.pondId})")
+                                              .join(', '),
+                                      focusNode: focusNode,
+                                      labelText: "PONDS",
+                                    );
+                                  },
+                                  onSelected: (value) {},
+                                  suggestionsCallback: (search) {
+                                    return filteredPonds.isEmpty
+                                        ? null
+                                        : filteredPonds
+                                            .where((ele) =>
+                                                (ele.name!
+                                                        .toLowerCase()
+                                                        .contains(search
+                                                            .toLowerCase()) ||
+                                                    ele.pondId
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .contains(search
+                                                            .toLowerCase())) &&
+                                                selectedFarms.any((element) =>
+                                                    element.farmId ==
+                                                    ele.farmId))
+                                            .toList();
+                                  },
+                                  itemBuilder: (context, suggestion) {
+                                    return Container(
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white),
+                                      child: CheckboxListTile(
+                                        title: Text(
+                                            "${suggestion.name} (${suggestion.pondId})"),
+                                        value:
+                                            selectedPonds.contains(suggestion),
+                                        onChanged: (bool? selected) {
+                                          setState(() {
+                                            if (selected == true &&
+                                                !selectedPonds
+                                                    .contains(suggestion)) {
+                                              selectedPonds.add(suggestion);
+                                            } else if (selected == false &&
+                                                selectedPonds
+                                                    .contains(suggestion)) {
+                                              selectedPonds.remove(suggestion);
+                                            }
+                                            _pondController.clear();
+                                          });
+                                        },
+                                      ),
+                                    );
+                                  },
+                                )),
+                              ],
                             ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: isMobile ? null : context.height * 0.13,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: const Offset(0, 0.5),
                           ),
-                          const SizedBox(
-                            width: 20,
+                        ],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: isMobile
+                          ? Column(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    color: greenColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      topRight: Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        "WHAT?",
+                                        style: GlobalFonts.ts16px400w(
+                                            color: AppColors.kcWhite),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Wrap(
+                                  children: List.generate(
+                                    selectedPonds.length > 1
+                                        ? 7
+                                        : options.length,
+                                    (index) => Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SizedBox(
+                                        width: 120,
+                                        child: Row(
+                                          children: [
+                                            Radio(
+                                              activeColor: greenColor,
+                                              value: options[index],
+                                              groupValue: parameterValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  parameterValue = value!;
+                                                });
+                                              },
+                                            ),
+                                            Text(
+                                              options[index],
+                                              style: GlobalFonts.ts14px500w,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Container(
+                                  width: 80,
+                                  decoration: const BoxDecoration(
+                                    color: greenColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      bottomLeft: Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        "WHAT?",
+                                        style: GlobalFonts.ts16px400w(
+                                            color: AppColors.kcWhite),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Wrap(
+                                    children: List.generate(
+                                      selectedPonds.length > 1
+                                          ? 7
+                                          : options.length,
+                                      (index) => SizedBox(
+                                        width: 120,
+                                        child: Row(
+                                          children: [
+                                            Radio(
+                                              activeColor: greenColor,
+                                              value: options[index],
+                                              groupValue: parameterValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  parameterValue = value!;
+                                                });
+                                              },
+                                            ),
+                                            Text(
+                                              options[index],
+                                              style: GlobalFonts.ts14px500w,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: isMobile ? null : context.height * 0.12,
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Add background color if needed
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: const Offset(
+                                0, 0.5), // changes position of shadow
                           ),
-                          Expanded(
-                              child: TypeAheadField<PondModel>(
-                            controller: _pondController,
-                            suggestionsController: _pondSuggestionsController,
-                            constraints: const BoxConstraints(maxHeight: 300),
-                            builder: (context, controller, focusNode) {
-                              return MyTextField(
-                                controller: controller,
-                                hintText: selectedPonds.isEmpty
-                                    ? "Select Pond"
-                                    : selectedPonds
-                                        .map((e) => "${e.name} (${e.pondId})")
-                                        .join(', '),
-                                focusNode: focusNode,
-                                labelText: "PONDS",
-                              );
-                            },
-                            onSelected: (value) {},
-                            suggestionsCallback: (search) {
-                              return filteredPonds.isEmpty
-                                  ? null
-                                  : filteredPonds
-                                      .where((ele) =>
-                                          (ele.name!.toLowerCase().contains(
-                                                  search.toLowerCase()) ||
-                                              ele.pondId
-                                                  .toString()
-                                                  .toLowerCase()
-                                                  .contains(
-                                                      search.toLowerCase())) &&
-                                          selectedFarms.any((element) =>
-                                              element.farmId == ele.farmId))
-                                      .toList();
-                            },
-                            itemBuilder: (context, suggestion) {
-                              return Container(
-                                decoration:
-                                    const BoxDecoration(color: Colors.white),
-                                child: CheckboxListTile(
-                                  title: Text(
-                                      "${suggestion.name} (${suggestion.pondId})"),
-                                  value: selectedPonds.contains(suggestion),
-                                  onChanged: (bool? selected) {
-                                    setState(() {
-                                      if (selected == true &&
-                                          !selectedPonds.contains(suggestion)) {
-                                        selectedPonds.add(suggestion);
-                                      } else if (selected == false &&
-                                          selectedPonds.contains(suggestion)) {
-                                        selectedPonds.remove(suggestion);
-                                      }
-                                      _pondController.clear();
-                                    });
+                        ],
+                        borderRadius: BorderRadius.circular(
+                            10), // Adjust border radius as needed
+                      ),
+                      child: isMobile
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    color: greenColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      topRight: Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        "WHEN?",
+                                        style: GlobalFonts.ts16px400w(
+                                            color: AppColors.kcWhite),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                MyTextField(
+                                  labelText: "From - To",
+                                  hintText: selectedDateRange == null
+                                      ? 'Select Date Range'
+                                      : '${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.start)}  -  ${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.end)}',
+                                  isReadOny: true,
+                                  onTap: () {
+                                    _selectDateRange(context);
                                   },
                                 ),
-                              );
-                            },
-                          )),
-                        ],
-                      ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: isMobile ? null : context.height * 0.13,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 3,
-                      offset: const Offset(0, 0.5),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: isMobile
-                    ? Column(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: greenColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                topRight: Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "WHAT?",
-                                  style: GlobalFonts.ts16px400w(
-                                      color: AppColors.kcWhite),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Wrap(
-                            children: List.generate(
-                              selectedPonds.length > 1 ? 7 : options.length,
-                              (index) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: SizedBox(
-                                  width: 120,
-                                  child: Row(
-                                    children: [
-                                      Radio(
-                                        activeColor: greenColor,
-                                        value: options[index],
-                                        groupValue: parameterValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            parameterValue = value!;
-                                          });
-                                        },
+                              ],
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 80,
+                                  decoration: const BoxDecoration(
+                                    color: greenColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      bottomLeft: Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        "WHEN?",
+                                        style: GlobalFonts.ts16px400w(
+                                            color: AppColors.kcWhite),
                                       ),
-                                      Text(
-                                        options[index],
-                                        style: GlobalFonts.ts14px500w,
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          )
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Container(
-                            width: 80,
-                            decoration: const BoxDecoration(
-                              color: greenColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                bottomLeft: Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "WHAT?",
-                                  style: GlobalFonts.ts16px400w(
-                                      color: AppColors.kcWhite),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Wrap(
-                              children: List.generate(
-                                selectedPonds.length > 1 ? 7 : options.length,
-                                (index) => SizedBox(
-                                  width: 120,
-                                  child: Row(
-                                    children: [
-                                      Radio(
-                                        activeColor: greenColor,
-                                        value: options[index],
-                                        groupValue: parameterValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            parameterValue = value!;
-                                          });
-                                        },
-                                      ),
-                                      Text(
-                                        options[index],
-                                        style: GlobalFonts.ts14px500w,
-                                      ),
-                                    ],
+                                Expanded(
+                                  child: MyTextField(
+                                    labelText: "From - To",
+                                    hintText: selectedDateRange == null
+                                        ? 'Select Date Range'
+                                        : '${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.start)}  -  ${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.end)}',
+                                    isReadOny: true,
+                                    onTap: () {
+                                      _selectDateRange(context);
+                                    },
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: isMobile ? null : context.height * 0.12,
-                decoration: BoxDecoration(
-                  color: Colors.white, // Add background color if needed
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 3,
-                      offset:
-                          const Offset(0, 0.5), // changes position of shadow
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.topEnd,
+                      child: MyButton(
+                          width: context.width * 0.2,
+                          text: "Submit",
+                          borderRadius: BorderRadius.circular(5),
+                          disabled: selectedFarms.isEmpty ||
+                              selectedPonds.isEmpty ||
+                              selectedDateRange == null,
+                          borderColor: selectedFarms.isEmpty ||
+                                  selectedPonds.isEmpty ||
+                                  selectedDateRange == null
+                              ? Colors.grey
+                              : greenColor,
+                          onPressed: () async {
+                            // if (_formKey.currentState!.validate()) {
+                            if (selectedFarms.isEmpty) {
+                              MyToasts.toastError("Please select farm");
+                              return;
+                            }
+                            if (selectedPonds.isEmpty) {
+                              MyToasts.toastError("Please select pond");
+                              return;
+                            }
+                            if (selectedDateRange == null) {
+                              MyToasts.toastError("Please select date range");
+                              return;
+                            }
+
+                            final startDate = selectedDateRange!.start;
+                            final endDate = selectedDateRange!.end;
+                            // final farmIds =
+                            //     selectedFarms.map((e) => e.farmId!).toList();
+                            final pondIds =
+                                selectedPonds.map((e) => e.pondId!).toList();
+                            controller.valueParameterModel =
+                                ValueParameterModel(
+                              ponds: selectedPonds,
+                              farms: selectedFarms,
+                              sensor: parameterValue,
+                              startDate: startDate,
+                              endDate: endDate,
+                              isComb: parameterValue.contains('&'),
+                            );
+                            List<String> parameterValues =
+                                parameterValue.contains('&')
+                                    ? parameterValue
+                                        .split('&')
+                                        .map((e) => e.trim())
+                                        .toList()
+                                    : [parameterValue];
+
+                            await controller.getWaterQualityChartData(
+                                pondIds, parameterValues, startDate, endDate);
+                          }),
+                    )
                   ],
-                  borderRadius: BorderRadius.circular(
-                      10), // Adjust border radius as needed
-                ),
-                child: isMobile
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: greenColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                topRight: Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "WHEN?",
-                                  style: GlobalFonts.ts16px400w(
-                                      color: AppColors.kcWhite),
-                                ),
-                              ),
-                            ),
-                          ),
-                          MyTextField(
-                            labelText: "From - To",
-                            hintText: selectedDateRange == null
-                                ? 'Select Date Range'
-                                : '${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.start)}  -  ${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.end)}',
-                            isReadOny: true,
-                            onTap: () {
-                              _selectDateRange(context);
-                            },
-                          ),
-                        ],
-                      )
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 80,
-                            decoration: const BoxDecoration(
-                              color: greenColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                bottomLeft: Radius.circular(10.0),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "WHEN?",
-                                  style: GlobalFonts.ts16px400w(
-                                      color: AppColors.kcWhite),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: MyTextField(
-                              labelText: "From - To",
-                              hintText: selectedDateRange == null
-                                  ? 'Select Date Range'
-                                  : '${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.start)}  -  ${DateFormat('dd/MMMM/yyyy').format(selectedDateRange!.end)}',
-                              isReadOny: true,
-                              onTap: () {
-                                _selectDateRange(context);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Align(
-                alignment: AlignmentDirectional.topEnd,
-                child: MyButton(
-                    width: context.width * 0.2,
-                    text: "Submit",
-                    borderRadius: BorderRadius.circular(5),
-                    disabled: selectedFarms.isEmpty ||
-                        selectedPonds.isEmpty ||
-                        selectedDateRange == null,
-                    borderColor: selectedFarms.isEmpty ||
-                            selectedPonds.isEmpty ||
-                            selectedDateRange == null
-                        ? Colors.grey
-                        : greenColor,
-                    onPressed: () async {
-                      // if (_formKey.currentState!.validate()) {
-                      if (selectedFarms.isEmpty) {
-                        MyToasts.toastError("Please select farm");
-                        return;
-                      }
-                      if (selectedPonds.isEmpty) {
-                        MyToasts.toastError("Please select pond");
-                        return;
-                      }
-                      if (selectedDateRange == null) {
-                        MyToasts.toastError("Please select date range");
-                        return;
-                      }
-
-                      final startDate = selectedDateRange!.start;
-                      final endDate = selectedDateRange!.end;
-                      // final farmIds =
-                      //     selectedFarms.map((e) => e.farmId!).toList();
-                      final pondIds =
-                          selectedPonds.map((e) => e.pondId!).toList();
-                      controller.valueParameterModel = ValueParameterModel(
-                        ponds: selectedPonds,
-                        farms: selectedFarms,
-                        sensor: parameterValue,
-                        startDate: startDate,
-                        endDate: endDate,
-                        isComb: parameterValue.contains('&'),
-                      );
-                      List<String> parameterValues =
-                          parameterValue.contains('&')
-                              ? parameterValue
-                                  .split('&')
-                                  .map((e) => e.trim())
-                                  .toList()
-                              : [parameterValue];
-
-                      await controller.getWaterQualityChartData(
-                          pondIds, parameterValues, startDate, endDate);
-                    }),
-              )
-            ],
+                );
+              }),
+            ),
           );
-        }),
-      ),
-    );
   }
 }

@@ -7,7 +7,7 @@ import '../../../core/network/base_api_service.dart';
 import '../../../model/farmer_pond_info_model.dart';
 
 class WaterQualityService extends BaseApiService {
-  Future<ResponseModel> getfarmerpondinfo() async {
+  Future<ResponseModel<FarmerPondInfoModel>> getfarmerpondinfo() async {
     String token = await LocalDataHelper.getUserToken();
 
     var res = await get(
@@ -17,7 +17,8 @@ class WaterQualityService extends BaseApiService {
       ),
     );
 
-    ResponseModel resModel = ResponseModel<FarmerPondInfoModel>(
+    ResponseModel<FarmerPondInfoModel> resModel =
+        ResponseModel<FarmerPondInfoModel>(
       message: res.data["message"],
       error: res.data["error"],
       result: FarmerPondInfoModel.fromMap(res.data["result"]),

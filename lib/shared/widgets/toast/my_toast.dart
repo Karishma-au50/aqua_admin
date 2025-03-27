@@ -16,6 +16,7 @@ class MyToasts {
   }
 
   static toastError(String text) {
+    print(text);
     _getSimpleSnackbar(text: text, isError: true);
   }
 
